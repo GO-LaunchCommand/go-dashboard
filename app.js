@@ -1315,9 +1315,25 @@ function startVoiceCommand() {
 }
 
 function processVoiceCommand(spoken) {
-    // Try to match: "add [note/idea/task] to [card name] [separator] [content]"
-    // Separators: dash, comma, colon, "that says", "saying", or just the rest of the sentence
     const lower = spoken.toLowerCase();
+
+    // Check for SEARCH commands first
+    const searchPatterns = [
+        /^(?:show|find|search|look for|filter|get)\s+(?:all\s+)?(?:actions?|tasks?|notes?|items?)?\s*(?:with|for|about|containing|mentioning|related to|matching)?\s+(.+)/i,
+        /^(?:show|find|search|look for)\s+(.+)/i,
+        /^(?:where|what)\s+(?:is|are|about)\s+(.+)/i
+    ];
+
+    for (const pattern of searchPatterns) {
+        const match = spoken.match(pattern);
+        if (match) {
+            const query = match[1].trim();
+            showVoiceSearchResults(query);
+            return;
+        }
+    }
+
+    // Otherwise handle as ADD note command
 
     // Find which area the user mentioned
     let matchedArea = null;
@@ -1432,6 +1448,113 @@ function processVoiceCommand(spoken) {
     }
 
     showToast('📌 Added to ' + matchedArea.name + ': "' + noteContent.substring(0, 40) + (noteContent.length > 40 ? '...' : '') + '"');
+}
+
+// ---- VOICE SEARCH RESULTS ----
+function showVoiceSearchResults(query) {
+    const q = query.toLowerCase();
+
+    // Search across all areas — actions, ideas, descriptions
+    const results = [];
+    areas.forEach(area => {
+        area.actions.forEach(action => {
+            if (action.task.toLowerCase().includes(q) ||
+                (action.owner && action.owner.toLowerCase().includes(q))) {
+                results.push({
+                    type: 'action',
+                    text: action.task,
+                    area: area.name,
+                    areaId: area.id,
+                    areaIcon: area.icon || '📋',
+                    deadline: action.deadline,
+                    priority: action.priority,
+                    status: action.status,
+                    owner: action.owner
+                });
+            }
+        });
+        (area.ideas || []).forEach(idea => {
+            if (idea.text && idea.text.toLowerCase().includes(q)) {
+                results.push({
+                    type: 'idea',
+                    text: idea.text,
+                    area: area.name,
+                    areaId: area.id,
+                    areaIcon: area.icon || '📋'
+                });
+            }
+        });
+        if (area.description && area.description.toLowerCase().includes(q)) {
+            results.push({
+                type: 'area',
+                text: area.description,
+                area: area.name,
+                areaId: area.id,
+                areaIcon: area.icon || '📋'
+            });
+        }
+    });
+
+    // Show results as a full page (reusing person-page)
+    const page = document.getElementById('person-page');
+    const now = new Date();
+
+    let html = `
+        <div class="person-page-header">
+            <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
+            <div class="person-page-title-row">
+                <h1>🔍 Results for "${query}" <span class="person-page-count">${results.length}</span></h1>
+            </div>
+        </div>
+        <div class="person-tasks-grid">`;
+
+    if (results.length === 0) {
+        html += '<div class="person-no-results">No results found for "' + query + '"</div>';
+    }
+
+    results.forEach(r => {
+        if (r.type === 'action') {
+            const isOverdue = r.status !== 'complete' && r.deadline && new Date(r.deadline) < now;
+            html += `
+                <div class="person-task-card ${r.status === 'complete' ? 'complete' : ''} ${isOverdue ? 'overdue-card' : ''}"
+                     onclick="closePersonTasks(); openDetail('${r.areaId}')">
+                    <div class="person-card-top">
+                        <span class="traffic-light ${r.priority}"></span>
+                        <span class="status-badge ${r.status}">${formatStatus(r.status)}</span>
+                    </div>
+                    <div class="person-card-task">${highlightMatch(r.text, query)}</div>
+                    <div class="person-card-meta">${r.areaIcon} ${r.area} · ${r.owner}</div>
+                    ${r.deadline ? '<div class="person-card-date ' + (isOverdue ? 'overdue' : '') + '">📅 ' + formatDate(r.deadline) + '</div>' : ''}
+                </div>`;
+        } else if (r.type === 'idea') {
+            html += `
+                <div class="person-task-card" onclick="closePersonTasks(); openDetail('${r.areaId}')">
+                    <div class="person-card-top"><span style="font-size:14px">💡</span><span class="status-badge not-started">Idea</span></div>
+                    <div class="person-card-task">${highlightMatch(r.text, query)}</div>
+                    <div class="person-card-meta">${r.areaIcon} ${r.area}</div>
+                </div>`;
+        } else {
+            html += `
+                <div class="person-task-card" onclick="closePersonTasks(); openDetail('${r.areaId}')">
+                    <div class="person-card-top"><span style="font-size:14px">📋</span><span class="status-badge not-started">Area</span></div>
+                    <div class="person-card-task">${highlightMatch(r.text.substring(0, 100), query)}${r.text.length > 100 ? '...' : ''}</div>
+                    <div class="person-card-meta">${r.areaIcon} ${r.area}</div>
+                </div>`;
+        }
+    });
+
+    html += '</div>';
+    page.innerHTML = html;
+    page.style.display = 'block';
+    document.getElementById('dashboard').querySelector('.launch-banner').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.metrics-bar').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.filter-bar').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.cards-grid').style.display = 'none';
+}
+
+function highlightMatch(text, query) {
+    const regex = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+    return text.replace(regex, '<mark style="background:#fde68a;padding:0 2px;border-radius:2px">$1</mark>');
 }
 
 // ---- FLOATING VOICE NOTE ----
