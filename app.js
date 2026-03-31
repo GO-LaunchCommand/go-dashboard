@@ -29,7 +29,6 @@ let relatedTasks = [];
 let showRelatedTasks = false;
 let launchDate = '2026-07-01';
 let isRecording = false;
-let mediaRecorder = null;
 
 const AREA_FILES = [
     'ws01-business-strategy', 'ws02-finance', 'ws03-legal-compliance',
@@ -191,7 +190,7 @@ function voicePassword() {
 
 function togglePasswordVisibility() {
     const input = document.getElementById('login-password');
-    const btn = input.nextElementSibling;
+    const btn = document.querySelector('.password-toggle');
     if (input.type === 'password') {
         input.type = 'text';
         btn.textContent = '🙈';
@@ -214,7 +213,7 @@ function attemptLogin() {
         loadConfig();
         loadAllData();
         startAutoRefresh();
-        showVoiceFab();
+        // Voice mic is in the Actions header bar — no FAB setup needed
     } else {
         document.getElementById('login-error').style.display = 'block';
     }
@@ -233,12 +232,27 @@ function logout() {
 async function loadAllData() {
     if (CONFIG.localMode) {
         const promises = AREA_FILES.map(async (id) => {
-            const cached = localStorage.getItem(`area_${id}`);
-            if (cached) { try { return JSON.parse(cached); } catch (e) {} }
+            // Always try to fetch fresh JSON first; use localStorage as fallback only
             try {
                 const resp = await fetch(`data/${id}.json?t=${Date.now()}`);
-                if (resp.ok) return await resp.json();
+                if (resp.ok) {
+                    const data = await resp.json();
+                    // Merge: if localStorage has edits (newer activityLog), prefer localStorage
+                    const cached = localStorage.getItem(`area_${id}`);
+                    if (cached) {
+                        try {
+                            const cachedData = JSON.parse(cached);
+                            if (cachedData.activityLog && cachedData.activityLog.length > (data.activityLog || []).length) {
+                                return cachedData; // local has edits not yet in the JSON file
+                            }
+                        } catch (e) {}
+                    }
+                    return data;
+                }
             } catch (e) {}
+            // Fallback to localStorage if fetch fails
+            const cached = localStorage.getItem(`area_${id}`);
+            if (cached) { try { return JSON.parse(cached); } catch (e) {} }
             return null;
         });
         areas = (await Promise.all(promises)).filter(Boolean);
@@ -339,7 +353,7 @@ function renderSummary() {
             total++;
             if (action.status === 'complete') complete++;
             if (action.status === 'in-progress') inProgress++;
-            if (action.status !== 'complete' && new Date(action.deadline) < now) overdue++;
+            if (action.status !== 'complete' && action.deadline && new Date(action.deadline) < now) overdue++;
             if (teamStats[action.owner]) {
                 teamStats[action.owner].total++;
                 if (action.status === 'complete') teamStats[action.owner].complete++;
@@ -521,8 +535,9 @@ function renderNotifications() {
     const now = new Date();
     areas.forEach(area => {
         area.actions.forEach(action => {
-            if (action.status === 'complete') return;
+            if (action.status === 'complete' || !action.deadline) return;
             const deadline = new Date(action.deadline);
+            if (isNaN(deadline.getTime())) return;
             const daysLeft = Math.ceil((deadline - now) / (1000 * 60 * 60 * 24));
             if (daysLeft < 0) warnings.push({ type: 'overdue', task: action.task, area: area.name, days: Math.abs(daysLeft) });
             else if (daysLeft <= 7) warnings.push({ type: 'soon', task: action.task, area: area.name, days: daysLeft });
@@ -705,7 +720,7 @@ function renderActions(area) {
     let html = '';
 
     area.actions.forEach((action, idx) => {
-        const isOverdue = new Date(action.deadline) < new Date() && action.status !== 'complete';
+        const isOverdue = action.deadline && new Date(action.deadline) < new Date() && action.status !== 'complete';
         const isExpanded = expandedActionId === action.id;
         const dbl = dateToDaysBeforeLaunch(action.deadline);
         const dblLabel = dbl > 0 ? `(${dbl}d before launch)` : '';
@@ -868,17 +883,16 @@ function addAction() {
     const owner = document.getElementById('new-action-owner').value;
     const deadline = document.getElementById('new-action-deadline').value;
     const priority = document.getElementById('new-action-priority').value;
-    let nextNum = area.actions.length + 1;
-    const prefix = area.id.substring(0, 3);
+    function newActionId() { return 'act-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6); }
 
-    area.actions.push({ id: prefix + '-' + String(nextNum++).padStart(3, '0'), task, owner, deadline: deadline || daysFromNow(14), priority, status: 'not-started', updates: [] });
+    area.actions.push({ id: newActionId(), task, owner, deadline: deadline || daysFromNow(14), priority, status: 'not-started', updates: [] });
     addActivityLog(area, `Added action: ${task}`);
     sendNotification(owner, task, area.name, deadline);
 
     if (showRelatedTasks) {
         relatedTasks.forEach(rt => {
             if (!rt.task.trim()) return;
-            area.actions.push({ id: prefix + '-' + String(nextNum++).padStart(3, '0'), task: rt.task.trim(), owner: rt.owner, deadline: rt.deadline, priority: rt.priority, status: 'not-started', updates: [{ date: todayStr(), by: currentUser, note: `Related to: ${task}` }] });
+            area.actions.push({ id: newActionId(), task: rt.task.trim(), owner: rt.owner, deadline: rt.deadline, priority: rt.priority, status: 'not-started', updates: [{ date: todayStr(), by: currentUser, note: `Related to: ${task}` }] });
             addActivityLog(area, `Added related task: ${rt.task.trim()}`);
             sendNotification(rt.owner, rt.task.trim(), area.name, rt.deadline);
         });
@@ -1176,10 +1190,8 @@ function confirmPromoteInbox(idx) {
     const target = areas.find(a => a.id === targetId);
     if (!target) return;
 
-    const prefix = target.id.substring(0, 4);
-    const nextNum = target.actions.length + 1;
     target.actions.push({
-        id: prefix + '-' + String(nextNum).padStart(3, '0'),
+        id: 'act-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
         task: taskName,
         owner: owner,
         deadline: deadline || daysFromNow(14),
@@ -1557,76 +1569,13 @@ function highlightMatch(text, query) {
     return text.replace(regex, '<mark style="background:#fde68a;padding:0 2px;border-radius:2px">$1</mark>');
 }
 
-// ---- FLOATING VOICE NOTE ----
-function showVoiceFab() {
-    // Voice mic is now in the Actions header bar — FAB no longer used
-}
 
-function initFabSwipe() {
-    const fab = document.getElementById('voice-fab');
-    if (!fab || fab._swipeInit) return;
-    fab._swipeInit = true;
-
-    let startX = 0, startRight = 0, dragging = false;
-
-    fab.addEventListener('touchstart', (e) => {
-        if (fab.classList.contains('dismissed')) return; // tap to restore handled by click
-        startX = e.touches[0].clientX;
-        startRight = parseInt(getComputedStyle(fab).right) || 24;
-        dragging = false;
-    }, { passive: true });
-
-    fab.addEventListener('touchmove', (e) => {
-        if (fab.classList.contains('dismissed')) return;
-        const dx = e.touches[0].clientX - startX;
-        if (dx > 10) { // only swipe right
-            dragging = true;
-            fab.style.transition = 'none';
-            fab.style.right = Math.max(-80, startRight - dx) + 'px';
-        }
-    }, { passive: true });
-
-    fab.addEventListener('touchend', () => {
-        fab.style.transition = '';
-        fab.style.right = '';
-        if (dragging) {
-            const currentRight = parseInt(getComputedStyle(fab).right);
-            if (currentRight < -20) {
-                dismissVoiceFab();
-            }
-            dragging = false;
-        }
-    });
-
-    // Double-tap to dismiss on desktop (right-click or long press alternative)
-    fab.addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        if (!fab.classList.contains('dismissed')) {
-            dismissVoiceFab();
-        }
-    });
-}
-
-function dismissVoiceFab() {
-    const fab = document.getElementById('voice-fab');
-    fab.classList.add('dismissed');
-    fab.onclick = restoreVoiceFab;
-}
-
-function restoreVoiceFab() {
-    const fab = document.getElementById('voice-fab');
-    if (fab.classList.contains('dismissed')) {
-        fab.classList.remove('dismissed');
-        fab.onclick = startVoiceNote;
-    }
-}
 
 function startVoiceNote() {
     const modal = document.getElementById('voice-modal');
     const textarea = document.getElementById('voice-note-text');
     const indicator = document.getElementById('voice-recording-indicator');
     const title = document.getElementById('voice-modal-title');
-    const fab = document.getElementById('voice-fab');
     const picker = document.getElementById('voice-card-picker');
     const buttonsDiv = document.getElementById('voice-modal-buttons');
 
@@ -1652,11 +1601,6 @@ function startVoiceNote() {
         `;
     }
 
-    // Animate FAB to recording state
-    fab.classList.add('recording');
-    document.getElementById('voice-fab-icon').textContent = '⏹️';
-    document.getElementById('voice-fab-label').textContent = 'Stop';
-
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
@@ -1677,52 +1621,25 @@ function startVoiceNote() {
         recognition.onend = () => {
             indicator.style.display = 'none';
             title.textContent = '📝 Your note';
-            fab.classList.remove('recording');
-            document.getElementById('voice-fab-icon').textContent = '🎙️';
-            document.getElementById('voice-fab-label').textContent = 'Voice Note';
             window._voiceRecognition = null;
         };
 
         recognition.onerror = (event) => {
             indicator.style.display = 'none';
-            if (event.error === 'not-allowed') {
-                title.textContent = '⚠️ Microphone access denied';
-            } else {
-                title.textContent = '📝 Type your note';
-            }
-            fab.classList.remove('recording');
-            document.getElementById('voice-fab-icon').textContent = '🎙️';
-            document.getElementById('voice-fab-label').textContent = 'Voice Note';
+            title.textContent = event.error === 'not-allowed' ? '⚠️ Microphone access denied' : '📝 Type your note';
             window._voiceRecognition = null;
         };
 
         recognition.start();
-
-        // FAB becomes stop button while recording
-        fab.onclick = function() {
-            if (window._voiceRecognition) {
-                window._voiceRecognition.stop();
-            }
-            fab.onclick = startVoiceNote;
-        };
     } else {
-        // No speech recognition — just show text input
         indicator.style.display = 'none';
         title.textContent = '📝 Type your note';
-        fab.classList.remove('recording');
-        document.getElementById('voice-fab-icon').textContent = '🎙️';
-        document.getElementById('voice-fab-label').textContent = 'Voice Note';
     }
 }
 
 function cancelVoiceNote() {
     if (window._voiceRecognition) window._voiceRecognition.stop();
     document.getElementById('voice-modal').style.display = 'none';
-    const fab = document.getElementById('voice-fab');
-    fab.classList.remove('recording');
-    fab.onclick = startVoiceNote;
-    document.getElementById('voice-fab-icon').textContent = '🎙️';
-    document.getElementById('voice-fab-label').textContent = 'Voice Note';
 }
 
 function showCardPicker() {
@@ -1831,6 +1748,6 @@ window.addEventListener('DOMContentLoaded', () => {
         loadConfig();
         loadAllData();
         startAutoRefresh();
-        showVoiceFab();
+        // Voice mic is in the Actions header bar — no FAB setup needed
     }
 });
