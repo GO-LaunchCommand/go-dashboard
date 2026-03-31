@@ -942,6 +942,35 @@ html {
     min-width: 0;
 }
 
+.detail-back-bar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+}
+
+.detail-back-btn-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.detail-back-btn-main:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+}
+
 .detail-panel {
     max-width: 880px;
     padding: 32px;
