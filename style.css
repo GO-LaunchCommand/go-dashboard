@@ -1878,17 +1878,17 @@ html {
     .action-row {
         display: flex;
         flex-wrap: wrap;
-        align-items: flex-start;
-        gap: 6px;
+        align-items: center;
+        gap: 4px 8px;
         padding: 10px 8px;
     }
     .action-row .drag-handle { display: none; }
-    .action-row .traffic-light { margin-top: 4px; flex-shrink: 0; }
-    .action-task { flex: 1; min-width: 0; font-size: 13px; line-height: 1.4; }
+    .action-row .traffic-light { flex-shrink: 0; width: 10px; height: 10px; }
+    .action-task { width: calc(100% - 26px); font-size: 14px; line-height: 1.4; }
     .action-owner, .action-deadline { display: none; }
     .cal-btn { display: none; }
-    .status-badge { order: 10; margin-left: 16px; }
-    .action-menu-btn { order: 11; }
+    .status-badge { order: 10; margin-left: 18px; font-size: 10px; }
+    .action-menu-btn { order: 11; font-size: 14px; }
     .form-row-inline { flex-direction: column; }
     .notifications-panel { right: 8px; left: 8px; width: auto; }
     .related-task-row { flex-wrap: wrap; }
