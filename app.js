@@ -36,7 +36,7 @@ const AREA_FILES = [
     'ws04-people', 'ws05-website', 'ws06-everfit',
     'ws07-exercise-content', 'ws08-club-software', 'ws09-parent-resources',
     'ws10-club-sales', 'ws11-merchandise', 'ws13-member-experience',
-    'ws14-technical'
+    'ws14-technical', 'inbox'
 ];
 
 // ---- HELPERS ----
@@ -166,6 +166,7 @@ function attemptLogin() {
         loadConfig();
         loadAllData();
         startAutoRefresh();
+        showVoiceFab();
     } else {
         document.getElementById('login-error').style.display = 'block';
     }
@@ -1012,6 +1013,170 @@ async function saveArea(area) {
     }
 }
 
+// ---- FLOATING VOICE NOTE ----
+function showVoiceFab() {
+    const fab = document.getElementById('voice-fab');
+    if (fab && currentUser) fab.style.display = 'flex';
+}
+
+function startVoiceNote() {
+    const modal = document.getElementById('voice-modal');
+    const textarea = document.getElementById('voice-note-text');
+    const indicator = document.getElementById('voice-recording-indicator');
+    const title = document.getElementById('voice-modal-title');
+    const fab = document.getElementById('voice-fab');
+    const picker = document.getElementById('voice-card-picker');
+
+    textarea.value = '';
+    indicator.style.display = 'flex';
+    title.textContent = '🎙️ Recording...';
+    picker.style.display = 'none';
+    modal.style.display = 'flex';
+
+    // Animate FAB to recording state
+    fab.classList.add('recording');
+    document.getElementById('voice-fab-icon').textContent = '⏹️';
+    document.getElementById('voice-fab-label').textContent = 'Stop';
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = 'en-AU';
+        recognition.interimResults = true;
+        recognition.continuous = true;
+
+        window._voiceRecognition = recognition;
+
+        recognition.onresult = (event) => {
+            let transcript = '';
+            for (let i = 0; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            textarea.value = transcript;
+        };
+
+        recognition.onend = () => {
+            indicator.style.display = 'none';
+            title.textContent = '📝 Your note';
+            fab.classList.remove('recording');
+            document.getElementById('voice-fab-icon').textContent = '🎙️';
+            document.getElementById('voice-fab-label').textContent = 'Voice Note';
+            window._voiceRecognition = null;
+        };
+
+        recognition.onerror = (event) => {
+            indicator.style.display = 'none';
+            if (event.error === 'not-allowed') {
+                title.textContent = '⚠️ Microphone access denied';
+            } else {
+                title.textContent = '📝 Type your note';
+            }
+            fab.classList.remove('recording');
+            document.getElementById('voice-fab-icon').textContent = '🎙️';
+            document.getElementById('voice-fab-label').textContent = 'Voice Note';
+            window._voiceRecognition = null;
+        };
+
+        recognition.start();
+
+        // FAB becomes stop button while recording
+        fab.onclick = function() {
+            if (window._voiceRecognition) {
+                window._voiceRecognition.stop();
+            }
+            fab.onclick = startVoiceNote;
+        };
+    } else {
+        // No speech recognition — just show text input
+        indicator.style.display = 'none';
+        title.textContent = '📝 Type your note';
+        fab.classList.remove('recording');
+        document.getElementById('voice-fab-icon').textContent = '🎙️';
+        document.getElementById('voice-fab-label').textContent = 'Voice Note';
+    }
+}
+
+function cancelVoiceNote() {
+    if (window._voiceRecognition) window._voiceRecognition.stop();
+    document.getElementById('voice-modal').style.display = 'none';
+    const fab = document.getElementById('voice-fab');
+    fab.classList.remove('recording');
+    fab.onclick = startVoiceNote;
+    document.getElementById('voice-fab-icon').textContent = '🎙️';
+    document.getElementById('voice-fab-label').textContent = 'Voice Note';
+}
+
+function showCardPicker() {
+    const picker = document.getElementById('voice-card-picker');
+    const select = document.getElementById('voice-card-select');
+    select.innerHTML = areas
+        .filter(a => a.id !== 'inbox')
+        .map(a => `<option value="${a.id}">${a.icon || '📋'} ${a.name}</option>`)
+        .join('');
+    picker.style.display = 'block';
+}
+
+function addToInbox() {
+    const text = document.getElementById('voice-note-text').value.trim();
+    if (!text) { alert('No note to add.'); return; }
+
+    const inbox = areas.find(a => a.id === 'inbox');
+    if (!inbox) { alert('Inbox not found.'); return; }
+
+    if (!inbox.ideas) inbox.ideas = [];
+    inbox.ideas.unshift({
+        date: todayStr(),
+        by: currentUser,
+        text: text
+    });
+    addActivityLog(inbox, 'Voice note added to inbox');
+    saveArea(inbox);
+    renderCards();
+    renderNotifications();
+
+    document.getElementById('voice-modal').style.display = 'none';
+    showToast('📥 Added to Inbox — triage later from your laptop');
+}
+
+function addToSelectedCard() {
+    const text = document.getElementById('voice-note-text').value.trim();
+    if (!text) { alert('No note to add.'); return; }
+
+    const areaId = document.getElementById('voice-card-select').value;
+    const area = areas.find(a => a.id === areaId);
+    if (!area) return;
+
+    if (!area.ideas) area.ideas = [];
+    area.ideas.unshift({
+        date: todayStr(),
+        by: currentUser,
+        text: text
+    });
+    addActivityLog(area, 'Voice note added');
+    saveArea(area);
+    renderCards();
+    renderNotifications();
+
+    document.getElementById('voice-modal').style.display = 'none';
+    showToast('✅ Added to ' + area.name);
+}
+
+function showToast(message) {
+    const existing = document.querySelector('.toast-notification');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 // ---- INIT ----
 window.addEventListener('DOMContentLoaded', () => {
     const savedUser = sessionStorage.getItem('dashboard_user');
@@ -1024,5 +1189,6 @@ window.addEventListener('DOMContentLoaded', () => {
         loadConfig();
         loadAllData();
         startAutoRefresh();
+        showVoiceFab();
     }
 });

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Launch Command Centre</title>
-    <link rel="stylesheet" href="style.css?v=3">
+    <link rel="stylesheet" href="style.css?v=4">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -273,6 +273,40 @@
         </div><!-- /.detail-overlay -->
     </div>
 
-    <script src="app.js?v=6"></script>
+    <!-- FLOATING VOICE NOTE BUTTON -->
+    <button class="voice-fab" id="voice-fab" onclick="startVoiceNote()" title="Quick voice note" style="display:none">
+        <span class="voice-fab-icon" id="voice-fab-icon">🎙️</span>
+        <span class="voice-fab-label" id="voice-fab-label">Voice Note</span>
+    </button>
+
+    <!-- VOICE NOTE MODAL -->
+    <div class="voice-modal-overlay" id="voice-modal" style="display:none" onclick="if(event.target===this)cancelVoiceNote()">
+        <div class="voice-modal">
+            <div class="voice-modal-header">
+                <h3 id="voice-modal-title">🎙️ Recording...</h3>
+                <button class="btn-icon" onclick="cancelVoiceNote()">✕</button>
+            </div>
+            <div class="voice-modal-body">
+                <div class="voice-recording-indicator" id="voice-recording-indicator">
+                    <div class="voice-pulse"></div>
+                    <span>Listening... speak now</span>
+                </div>
+                <textarea id="voice-note-text" class="voice-note-textarea" rows="4" placeholder="Your note will appear here... (or type manually)"></textarea>
+            </div>
+            <div class="voice-modal-actions">
+                <div class="voice-modal-label">Where should this go?</div>
+                <div class="voice-modal-buttons">
+                    <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Add to a Card</button>
+                    <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Add to Inbox</button>
+                </div>
+                <div id="voice-card-picker" style="display:none">
+                    <select id="voice-card-select" class="form-input" style="margin-top:10px"></select>
+                    <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addToSelectedCard()">Add Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=7"></script>
 </body>
 </html>

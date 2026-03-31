@@ -1,0 +1,10 @@
+{
+  "id": "inbox",
+  "name": "Inbox / Voice Notes",
+  "icon": "📥",
+  "description": "Unallocated voice notes, quick thoughts, and ideas to be triaged and assigned to workstreams.",
+  "trafficLight": "green",
+  "actions": [],
+  "ideas": [],
+  "activityLog": []
+}

@@ -1367,6 +1367,167 @@ body {
 ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
+/* ---- FLOATING VOICE NOTE BUTTON ---- */
+.voice-fab {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    border: none;
+    border-radius: 28px;
+    background: var(--accent);
+    color: white;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.4);
+    transition: all 0.2s;
+}
+.voice-fab:hover { background: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108, 92, 231, 0.5); }
+.voice-fab:active { transform: translateY(0); }
+.voice-fab.recording {
+    background: var(--red);
+    box-shadow: 0 4px 20px rgba(224, 62, 62, 0.4);
+    animation: pulse 1.5s infinite;
+}
+.voice-fab-icon { font-size: 20px; }
+.voice-fab-label { white-space: nowrap; }
+
+/* ---- VOICE NOTE MODAL ---- */
+.voice-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 500;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.15s ease;
+}
+@media (min-width: 769px) {
+    .voice-modal-overlay { align-items: center; }
+}
+
+.voice-modal {
+    background: var(--bg-card);
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: slideUp 0.25s ease;
+}
+@media (min-width: 769px) {
+    .voice-modal { border-radius: var(--radius); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.voice-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 12px;
+}
+.voice-modal-header h3 { font-size: 18px; font-weight: 700; }
+
+.voice-modal-body { padding: 0 24px 16px; }
+
+.voice-recording-indicator {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: var(--red-bg);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    font-size: 14px;
+    color: var(--red);
+    font-weight: 500;
+}
+
+.voice-pulse {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: pulse 1.5s infinite;
+    flex-shrink: 0;
+}
+
+.voice-note-textarea {
+    width: 100%;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.5;
+    resize: vertical;
+}
+.voice-note-textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(108,92,231,0.1); }
+
+.voice-modal-actions {
+    padding: 16px 24px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-input);
+}
+
+.voice-modal-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.voice-modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+.voice-action-btn {
+    flex: 1;
+    justify-content: center;
+    padding: 14px 16px !important;
+    font-size: 14px !important;
+}
+
+/* ---- TOAST NOTIFICATION ---- */
+.toast-notification {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--text);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 24px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 600;
+    opacity: 0;
+    transition: all 0.3s;
+    white-space: nowrap;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.toast-notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* ---- PERSON TASKS MODAL ---- */
 .person-tasks-overlay {
     position: fixed;
@@ -1510,6 +1671,20 @@ body {
     .person-task-row { padding: 10px 16px; }
     .person-tasks-header { padding: 16px; }
     .person-tasks-summary { padding: 10px 16px; flex-wrap: wrap; }
+
+    /* Voice FAB — bigger on mobile */
+    .voice-fab {
+        bottom: 20px;
+        right: 16px;
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 32px;
+        box-shadow: 0 6px 28px rgba(108, 92, 231, 0.5);
+    }
+    .voice-fab-icon { font-size: 24px; }
+
+    /* Move sidebar toggle to avoid FAB overlap */
+    .sidebar-toggle { bottom: 80px; }
 }
 
 @media (max-width: 480px) {
