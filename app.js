@@ -5,7 +5,7 @@
 // ---- CONFIG ----
 const CONFIG = {
     apiUrl: null,
-    password: 'launch2026',
+    password: 'launch26',
     refreshInterval: 30000,
     lockDuration: 5 * 60 * 1000,
     localMode: true,
@@ -153,6 +153,42 @@ function syncDeadlineFromDays() {
 }
 
 // ---- LOGIN ----
+function voicePassword() {
+    const btn = document.querySelector('.password-mic-btn');
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Voice input not supported. Try Chrome or Edge.');
+        return;
+    }
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-AU';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    btn.style.background = '#E8317F';
+    btn.style.borderRadius = '50%';
+    btn.textContent = '⏹️';
+
+    recognition.onresult = (event) => {
+        let spoken = event.results[0][0].transcript.trim().toLowerCase().replace(/\s+/g, '');
+        document.getElementById('login-password').value = spoken;
+        // Auto-show so they can verify
+        document.getElementById('login-password').type = 'text';
+        document.querySelector('.password-toggle').textContent = '🙈';
+        btn.textContent = '🎙️';
+        btn.style.background = '';
+    };
+    recognition.onerror = () => {
+        btn.textContent = '🎙️';
+        btn.style.background = '';
+    };
+    recognition.onend = () => {
+        btn.textContent = '🎙️';
+        btn.style.background = '';
+    };
+    recognition.start();
+}
+
 function togglePasswordVisibility() {
     const input = document.getElementById('login-password');
     const btn = input.nextElementSibling;

@@ -107,7 +107,20 @@ html {
 .password-wrapper {
     position: relative;
 }
-.password-wrapper input { padding-right: 44px; }
+.password-wrapper input { padding-right: 72px; }
+.password-mic-btn {
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+}
+.password-mic-btn:hover { opacity: 1; }
 .password-toggle {
     position: absolute;
     right: 8px;
