@@ -153,6 +153,18 @@ function syncDeadlineFromDays() {
 }
 
 // ---- LOGIN ----
+function togglePasswordVisibility() {
+    const input = document.getElementById('login-password');
+    const btn = input.nextElementSibling;
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+}
+
 function attemptLogin() {
     const password = document.getElementById('login-password').value;
     const user = document.getElementById('login-user').value;

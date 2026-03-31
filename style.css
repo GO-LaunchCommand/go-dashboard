@@ -104,6 +104,24 @@ html {
     box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
 }
 
+.password-wrapper {
+    position: relative;
+}
+.password-wrapper input { padding-right: 44px; }
+.password-toggle {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 4px;
+    opacity: 0.6;
+}
+.password-toggle:hover { opacity: 1; }
+
 .login-error {
     color: var(--red);
     font-size: 13px;
@@ -1500,6 +1518,29 @@ html {
     padding: 20px 24px 12px;
 }
 .voice-modal-header h3 { font-size: 18px; font-weight: 700; }
+
+.voice-close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.voice-close-btn:hover { background: var(--bg-card-hover); }
+
+.voice-cancel-btn {
+    width: 100%;
+    margin-top: 10px;
+    justify-content: center;
+}
 
 .voice-modal-body { padding: 0 24px 16px; }
 

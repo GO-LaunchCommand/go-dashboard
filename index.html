@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=15">
+    <link rel="stylesheet" href="style.css?v=16">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -24,7 +24,10 @@
             <div class="login-form">
                 <div class="form-group">
                     <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter password" autocomplete="off" onkeydown="if(event.key==='Enter')attemptLogin()">
+                    <div class="password-wrapper">
+                        <input type="password" id="login-password" placeholder="Enter password" autocomplete="off" onkeydown="if(event.key==='Enter')attemptLogin()">
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility()" title="Show password">👁️</button>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="login-user">Who are you?</label>
@@ -296,7 +299,7 @@
         <div class="voice-modal">
             <div class="voice-modal-header">
                 <h3 id="voice-modal-title">🎙️ Recording...</h3>
-                <button class="btn-icon" onclick="cancelVoiceNote()">✕</button>
+                <button class="voice-close-btn" onclick="cancelVoiceNote()">✕</button>
             </div>
             <div class="voice-modal-body">
                 <div class="voice-recording-indicator" id="voice-recording-indicator">
@@ -315,10 +318,11 @@
                     <select id="voice-card-select" class="form-input" style="margin-top:10px"></select>
                     <button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="addToSelectedCard()">Add Note</button>
                 </div>
+                <button class="btn btn-outline voice-cancel-btn" onclick="cancelVoiceNote()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=12"></script>
+    <script src="app.js?v=13"></script>
 </body>
 </html>
