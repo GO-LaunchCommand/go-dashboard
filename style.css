@@ -1664,11 +1664,20 @@ body {
     .summary-number { font-size: 24px; }
     .filter-bar { padding: 12px 16px; overflow-x: auto; }
     .cards-grid { padding: 8px 16px 24px; grid-template-columns: 1fr; }
-    .detail-panel { padding: 16px; }
+    .detail-panel { padding: 12px; }
+    .detail-section { padding: 14px; margin-bottom: 14px; }
+    .detail-header { margin-bottom: 20px; }
+    .detail-icon { font-size: 32px; }
+    .detail-header h2 { font-size: 20px; }
     .action-row {
-        grid-template-columns: 20px 10px 1fr 70px 36px;
+        grid-template-columns: 10px 1fr auto auto;
+        gap: 8px;
+        padding: 10px 8px;
     }
+    .action-row .drag-handle { display: none; }
     .action-owner, .action-deadline { display: none; }
+    .action-task { font-size: 13px; }
+    .cal-btn { display: none; }
     .form-row-inline { flex-direction: column; }
     .notifications-panel { right: 8px; left: 8px; width: auto; }
     .related-task-row { flex-wrap: wrap; }
