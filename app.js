@@ -334,7 +334,9 @@ function renderSummary() {
     }
 }
 
-// ---- PERSON TASK LIST ----
+// ---- PERSON TASK LIST (FULL PAGE) ----
+let personTasksSearchQuery = '';
+
 function showPersonTasks(person) {
     // Gather all tasks for this person across all areas
     const tasks = [];
@@ -344,67 +346,107 @@ function showPersonTasks(person) {
                 tasks.push({
                     task: action.task,
                     area: area.name,
+                    areaId: area.id,
                     areaIcon: area.icon || '📋',
                     deadline: action.deadline,
                     priority: action.priority,
-                    status: action.status
+                    status: action.status,
+                    id: action.id
                 });
             }
         });
     });
 
-    // Sort: incomplete first (by priority red>amber>green), then complete at bottom
-    const pOrder = {red: 0, amber: 1, green: 2};
+    personTasksSearchQuery = '';
+    renderPersonPage(person, tasks);
+}
+
+function renderPersonPage(person, allTasks) {
+    const query = personTasksSearchQuery.toLowerCase();
+    let tasks = allTasks;
+    if (query) {
+        tasks = allTasks.filter(t =>
+            t.task.toLowerCase().includes(query) ||
+            t.area.toLowerCase().includes(query)
+        );
+    }
+
+    // Sort: incomplete by date (earliest first, no-date last), then complete at bottom
     tasks.sort((a, b) => {
         if (a.status === 'complete' && b.status !== 'complete') return 1;
         if (a.status !== 'complete' && b.status === 'complete') return -1;
-        return (pOrder[a.priority] || 2) - (pOrder[b.priority] || 2);
+        // Both same completion state — sort by date
+        const aDate = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+        const bDate = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+        return aDate - bDate;
     });
 
     const now = new Date();
-    let html = `<div class="person-tasks-overlay" onclick="if(event.target===this)closePersonTasks()">
-        <div class="person-tasks-modal">
-            <div class="person-tasks-header">
-                <h2>${person}'s Tasks (${tasks.length})</h2>
-                <button class="btn-icon" onclick="closePersonTasks()">✕</button>
+    const completeCount = allTasks.filter(t => t.status === 'complete').length;
+    const inProgCount = allTasks.filter(t => t.status === 'in-progress').length;
+    const overdueCount = allTasks.filter(t => t.status !== 'complete' && new Date(t.deadline) < now).length;
+
+    const page = document.getElementById('person-page');
+    page.innerHTML = `
+        <div class="person-page-header">
+            <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
+            <div class="person-page-title-row">
+                <h1>${person}'s Tasks <span class="person-page-count">${allTasks.length}</span></h1>
             </div>
-            <div class="person-tasks-summary">
-                <span class="person-stat">${tasks.filter(t => t.status === 'complete').length} complete</span>
-                <span class="person-stat">${tasks.filter(t => t.status === 'in-progress').length} in progress</span>
-                <span class="person-stat">${tasks.filter(t => t.status !== 'complete' && new Date(t.deadline) < now).length} overdue</span>
+            <div class="person-page-stats">
+                <span class="person-stat-pill">${completeCount} ✅ complete</span>
+                <span class="person-stat-pill">${inProgCount} 🟡 in progress</span>
+                <span class="person-stat-pill ${overdueCount > 0 ? 'overdue' : ''}">${overdueCount} 🔴 overdue</span>
             </div>
-            <div class="person-tasks-list">`;
+            <div class="person-search-bar">
+                <input type="text" id="person-search-input" class="form-input" placeholder="Search tasks or areas..."
+                    value="${personTasksSearchQuery}"
+                    oninput="personTasksSearchQuery=this.value; renderPersonPage('${person}', window._personAllTasks)">
+            </div>
+        </div>
+        <div class="person-tasks-grid">
+            ${tasks.map(t => {
+                const isOverdue = t.status !== 'complete' && t.deadline && new Date(t.deadline) < now;
+                const dbl = dateToDaysBeforeLaunch(t.deadline);
+                const dblLabel = dbl > 0 ? dbl + 'd before launch' : '';
+                const dateDisplay = t.deadline ? formatDate(t.deadline) : 'No date';
+                return `
+                    <div class="person-task-card ${t.status === 'complete' ? 'complete' : ''} ${isOverdue ? 'overdue-card' : ''}"
+                         onclick="closePersonTasks(); openDetail('${t.areaId}')">
+                        <div class="person-card-top">
+                            <span class="traffic-light ${t.priority}"></span>
+                            <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
+                        </div>
+                        <div class="person-card-task">${t.task}</div>
+                        <div class="person-card-meta">
+                            <span>${t.areaIcon} ${t.area}</span>
+                        </div>
+                        <div class="person-card-date ${isOverdue ? 'overdue' : ''}">
+                            📅 ${dateDisplay} ${dblLabel ? '<small>' + dblLabel + '</small>' : ''}
+                        </div>
+                    </div>`;
+            }).join('')}
+            ${tasks.length === 0 ? '<div class="person-no-results">No tasks match your search.</div>' : ''}
+        </div>
+    `;
 
-    tasks.forEach(t => {
-        const isOverdue = t.status !== 'complete' && new Date(t.deadline) < now;
-        const dbl = dateToDaysBeforeLaunch(t.deadline);
-        const dblLabel = dbl > 0 ? `(${dbl}d before launch)` : '';
-        html += `
-            <div class="person-task-row ${t.status === 'complete' ? 'complete' : ''}">
-                <span class="traffic-light ${t.priority}"></span>
-                <div class="person-task-info">
-                    <div class="person-task-name">${t.task}</div>
-                    <div class="person-task-meta">${t.areaIcon} ${t.area}</div>
-                </div>
-                <div class="person-task-right">
-                    <span class="person-task-date ${isOverdue ? 'overdue' : ''}">${formatDate(t.deadline)} <small>${dblLabel}</small></span>
-                    <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
-                </div>
-            </div>`;
-    });
+    // Store all tasks for search re-renders
+    window._personAllTasks = allTasks;
 
-    html += `</div></div></div>`;
-
-    // Remove existing overlay if any
-    const existing = document.querySelector('.person-tasks-overlay');
-    if (existing) existing.remove();
-
-    document.body.insertAdjacentHTML('beforeend', html);
+    page.style.display = 'block';
+    document.getElementById('dashboard').querySelector('.launch-banner').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.metrics-bar').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.filter-bar').style.display = 'none';
+    document.getElementById('dashboard').querySelector('.cards-grid').style.display = 'none';
 }
 
 function closePersonTasks() {
-    const el = document.querySelector('.person-tasks-overlay');
-    if (el) el.remove();
+    document.getElementById('person-page').style.display = 'none';
+    document.getElementById('person-page').innerHTML = '';
+    document.getElementById('dashboard').querySelector('.launch-banner').style.display = '';
+    document.getElementById('dashboard').querySelector('.metrics-bar').style.display = '';
+    document.getElementById('dashboard').querySelector('.filter-bar').style.display = '';
+    document.getElementById('dashboard').querySelector('.cards-grid').style.display = '';
 }
 
 // ---- FILTER ----

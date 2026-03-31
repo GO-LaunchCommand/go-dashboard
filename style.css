@@ -1528,99 +1528,131 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-/* ---- PERSON TASKS MODAL ---- */
-.person-tasks-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: 500;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.15s ease;
+/* ---- PERSON TASKS PAGE ---- */
+.person-page {
+    padding: 0 32px 32px;
 }
 
-.person-tasks-modal {
+.person-page-header {
+    padding: 24px 0 16px;
+}
+
+.person-page-title-row {
+    margin-top: 16px;
+}
+.person-page-title-row h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+}
+.person-page-count {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-left: 4px;
+}
+
+.person-page-stats {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+.person-stat-pill {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
     background: var(--bg-card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-lg);
-    width: 90%;
-    max-width: 720px;
-    max-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    border: 1px solid var(--border);
+    padding: 5px 14px;
+    border-radius: 20px;
+}
+.person-stat-pill.overdue {
+    color: var(--red);
+    background: var(--red-bg);
+    border-color: rgba(224,62,62,0.15);
 }
 
-.person-tasks-header {
+.person-search-bar {
+    margin-top: 16px;
+    max-width: 400px;
+}
+.person-search-bar .form-input {
+    padding: 10px 16px;
+    font-size: 14px;
+}
+
+/* Task card grid — 2 columns on desktop, 1 on mobile */
+.person-tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.person-task-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.person-task-card:hover {
+    border-color: var(--accent);
+    box-shadow: var(--shadow);
+    transform: translateY(-1px);
+}
+.person-task-card.complete {
+    opacity: 0.5;
+}
+.person-task-card.complete .person-card-task {
+    text-decoration: line-through;
+}
+.person-task-card.overdue-card {
+    border-left: 3px solid var(--red);
+}
+
+.person-card-top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 24px;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
 }
-.person-tasks-header h2 { font-size: 18px; font-weight: 700; }
+.person-card-top .traffic-light { width: 10px; height: 10px; }
 
-.person-tasks-summary {
-    display: flex;
-    gap: 16px;
-    padding: 12px 24px;
-    background: var(--bg-input);
-    border-bottom: 1px solid var(--border);
-}
-.person-stat {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text-muted);
-}
-
-.person-tasks-list {
-    overflow-y: auto;
-    flex: 1;
-    padding: 8px 0;
-}
-
-.person-task-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 24px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-}
-.person-task-row:last-child { border-bottom: none; }
-.person-task-row.complete { opacity: 0.5; }
-.person-task-row.complete .person-task-name { text-decoration: line-through; }
-.person-task-row .traffic-light { width: 10px; height: 10px; flex-shrink: 0; }
-
-.person-task-info { flex: 1; min-width: 0; }
-.person-task-name {
+.person-card-task {
+    font-size: 14px;
     font-weight: 500;
     color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.person-task-meta {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
+    line-height: 1.4;
+    margin-bottom: 8px;
 }
 
-.person-task-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+.person-card-meta {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
 }
-.person-task-date {
+
+.person-card-date {
     font-size: 12px;
     color: var(--text-muted);
-    white-space: nowrap;
 }
-.person-task-date.overdue {
+.person-card-date.overdue {
     color: var(--red);
     font-weight: 600;
+}
+.person-card-date small {
+    color: var(--text-dim);
+}
+
+.person-no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--text-dim);
+    font-size: 14px;
 }
 
 /* ---- RESPONSIVE ---- */
@@ -1665,12 +1697,11 @@ body {
     .sidebar.open { left: 0; }
     .sidebar-toggle { display: block; }
 
-    /* Person modal mobile */
-    .person-tasks-modal { width: 95%; max-height: 90vh; }
-    .person-task-right { flex-direction: column; align-items: flex-end; gap: 4px; }
-    .person-task-row { padding: 10px 16px; }
-    .person-tasks-header { padding: 16px; }
-    .person-tasks-summary { padding: 10px 16px; flex-wrap: wrap; }
+    /* Person tasks page mobile */
+    .person-page { padding: 0 16px 24px; }
+    .person-tasks-grid { grid-template-columns: 1fr; }
+    .person-page-title-row h1 { font-size: 20px; }
+    .person-search-bar { max-width: 100%; }
 
     /* Voice FAB — bigger on mobile */
     .voice-fab {
