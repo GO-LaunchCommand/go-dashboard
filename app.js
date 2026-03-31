@@ -993,10 +993,182 @@ async function sendNotification(owner, task, areaName, deadline) {
 function renderIdeas(area) {
     const list = document.getElementById('ideas-list');
     let html = '';
-    (area.ideas || []).forEach(idea => {
-        html += `<div class="idea-item"><span class="idea-bullet">💡</span><div><div class="idea-content">${idea.text}</div><div class="idea-meta">${idea.by} &middot; ${idea.date}</div></div></div>`;
+    const isInbox = area.id === 'inbox';
+
+    (area.ideas || []).forEach((idea, idx) => {
+        if (isInbox) {
+            // Inbox notes get full controls
+            html += `
+                <div class="idea-item inbox-note" data-idx="${idx}">
+                    <span class="idea-bullet">📥</span>
+                    <div class="idea-main">
+                        <div class="idea-content" id="inbox-text-${idx}">${idea.text}</div>
+                        <div class="idea-meta">${idea.by || 'Unknown'} &middot; ${idea.date || ''}</div>
+                        <div class="inbox-actions">
+                            <button class="inbox-btn" onclick="editInboxNote(${idx})" title="Edit">✏️ Edit</button>
+                            <button class="inbox-btn" onclick="moveInboxToCard(${idx})" title="Move to card">📋 Move to Card</button>
+                            <button class="inbox-btn inbox-btn-promote" onclick="promoteInboxToTask(${idx})" title="Convert to task">🎯 Make Task</button>
+                            <button class="inbox-btn inbox-btn-delete" onclick="deleteInboxNote(${idx})" title="Delete">🗑️</button>
+                        </div>
+                        <div class="inbox-edit-form" id="inbox-edit-${idx}" style="display:none">
+                            <textarea id="inbox-edit-text-${idx}" rows="2">${idea.text}</textarea>
+                            <div class="inbox-edit-buttons">
+                                <button class="btn btn-sm btn-primary" onclick="saveInboxEdit(${idx})">Save</button>
+                                <button class="btn btn-sm btn-outline" onclick="cancelInboxEdit(${idx})">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="inbox-move-form" id="inbox-move-${idx}" style="display:none">
+                            <select id="inbox-move-select-${idx}" class="form-input">
+                                ${areas.filter(a => a.id !== 'inbox').map(a => `<option value="${a.id}">${a.icon || '📋'} ${a.name}</option>`).join('')}
+                            </select>
+                            <div class="inbox-edit-buttons">
+                                <button class="btn btn-sm btn-primary" onclick="confirmMoveInbox(${idx})">Move</button>
+                                <button class="btn btn-sm btn-outline" onclick="document.getElementById('inbox-move-${idx}').style.display='none'">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="inbox-task-form" id="inbox-task-${idx}" style="display:none">
+                            <input type="text" id="inbox-task-name-${idx}" value="${idea.text.replace(/"/g, '&quot;')}" class="form-input" placeholder="Task name">
+                            <div class="inbox-task-row">
+                                <select id="inbox-task-area-${idx}" class="form-input">
+                                    ${areas.filter(a => a.id !== 'inbox').map(a => `<option value="${a.id}">${a.icon || '📋'} ${a.name}</option>`).join('')}
+                                </select>
+                                <select id="inbox-task-owner-${idx}" class="form-input">
+                                    ${TEAM_MEMBERS.map(m => `<option value="${m}">${m}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="inbox-task-row">
+                                <input type="date" id="inbox-task-date-${idx}" class="form-input">
+                                <select id="inbox-task-priority-${idx}" class="form-input">
+                                    <option value="red">🔴 High</option>
+                                    <option value="amber" selected>🟡 Medium</option>
+                                    <option value="green">🟢 Low</option>
+                                </select>
+                            </div>
+                            <div class="inbox-edit-buttons">
+                                <button class="btn btn-sm btn-primary" onclick="confirmPromoteInbox(${idx})">Create Task</button>
+                                <button class="btn btn-sm btn-outline" onclick="document.getElementById('inbox-task-${idx}').style.display='none'">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+        } else {
+            // Regular ideas — simple display
+            html += `<div class="idea-item"><span class="idea-bullet">💡</span><div><div class="idea-content">${idea.text}</div><div class="idea-meta">${idea.by || ''} &middot; ${idea.date || ''}</div></div></div>`;
+        }
     });
-    list.innerHTML = html || '<div style="padding: 8px; color: var(--text-dim); font-size: 13px;">No ideas yet</div>';
+
+    list.innerHTML = html || '<div style="padding: 8px; color: var(--text-dim); font-size: 13px;">' + (isInbox ? 'No voice notes yet — use the 🎙️ mic to add one' : 'No ideas yet') + '</div>';
+}
+
+// ---- INBOX NOTE CONTROLS ----
+function editInboxNote(idx) {
+    document.getElementById('inbox-edit-' + idx).style.display = 'block';
+    document.getElementById('inbox-move-' + idx).style.display = 'none';
+    document.getElementById('inbox-task-' + idx).style.display = 'none';
+}
+
+function cancelInboxEdit(idx) {
+    const inbox = areas.find(a => a.id === 'inbox');
+    document.getElementById('inbox-edit-text-' + idx).value = inbox.ideas[idx].text;
+    document.getElementById('inbox-edit-' + idx).style.display = 'none';
+}
+
+function saveInboxEdit(idx) {
+    const inbox = areas.find(a => a.id === 'inbox');
+    const newText = document.getElementById('inbox-edit-text-' + idx).value.trim();
+    if (!newText) return;
+    inbox.ideas[idx].text = newText;
+    inbox.ideas[idx].date = todayStr();
+    saveArea(inbox);
+    renderIdeas(inbox);
+    showToast('✏️ Note updated');
+}
+
+function deleteInboxNote(idx) {
+    const inbox = areas.find(a => a.id === 'inbox');
+    if (!confirm('Delete this note?')) return;
+    inbox.ideas.splice(idx, 1);
+    addActivityLog(inbox, 'Deleted a note');
+    saveArea(inbox);
+    renderIdeas(inbox);
+    renderCards();
+    showToast('🗑️ Note deleted');
+}
+
+function moveInboxToCard(idx) {
+    document.getElementById('inbox-move-' + idx).style.display = 'block';
+    document.getElementById('inbox-edit-' + idx).style.display = 'none';
+    document.getElementById('inbox-task-' + idx).style.display = 'none';
+}
+
+function confirmMoveInbox(idx) {
+    const inbox = areas.find(a => a.id === 'inbox');
+    const targetId = document.getElementById('inbox-move-select-' + idx).value;
+    const target = areas.find(a => a.id === targetId);
+    if (!target || !inbox) return;
+
+    const note = inbox.ideas[idx];
+    if (!target.ideas) target.ideas = [];
+    target.ideas.unshift(note);
+    inbox.ideas.splice(idx, 1);
+
+    addActivityLog(target, 'Note moved from inbox');
+    addActivityLog(inbox, 'Note moved to ' + target.name);
+    saveArea(inbox);
+    saveArea(target);
+    renderIdeas(inbox);
+    renderCards();
+    showToast('📋 Moved to ' + target.name);
+}
+
+function promoteInboxToTask(idx) {
+    document.getElementById('inbox-task-' + idx).style.display = 'block';
+    document.getElementById('inbox-edit-' + idx).style.display = 'none';
+    document.getElementById('inbox-move-' + idx).style.display = 'none';
+}
+
+function confirmPromoteInbox(idx) {
+    const inbox = areas.find(a => a.id === 'inbox');
+    const taskName = document.getElementById('inbox-task-name-' + idx).value.trim();
+    const targetId = document.getElementById('inbox-task-area-' + idx).value;
+    const owner = document.getElementById('inbox-task-owner-' + idx).value;
+    const deadline = document.getElementById('inbox-task-date-' + idx).value;
+    const priority = document.getElementById('inbox-task-priority-' + idx).value;
+
+    if (!taskName) { alert('Task name is required.'); return; }
+
+    const target = areas.find(a => a.id === targetId);
+    if (!target) return;
+
+    const prefix = target.id.substring(0, 4);
+    const nextNum = target.actions.length + 1;
+    target.actions.push({
+        id: prefix + '-' + String(nextNum).padStart(3, '0'),
+        task: taskName,
+        owner: owner,
+        deadline: deadline || daysFromNow(14),
+        priority: priority,
+        status: 'not-started',
+        updates: [{ date: todayStr(), by: currentUser, note: 'Created from inbox note' }]
+    });
+
+    // Sort by priority
+    target.actions.sort((a, b) => {
+        const order = {red: 0, amber: 1, green: 2};
+        return (order[a.priority] !== undefined ? order[a.priority] : 2) - (order[b.priority] !== undefined ? order[b.priority] : 2);
+    });
+
+    // Remove from inbox
+    inbox.ideas.splice(idx, 1);
+
+    addActivityLog(target, 'Task created from inbox: ' + taskName);
+    addActivityLog(inbox, 'Note promoted to task in ' + target.name);
+    saveArea(inbox);
+    saveArea(target);
+    renderIdeas(inbox);
+    renderCards();
+    renderSummary();
+    showToast('🎯 Task created in ' + target.name);
 }
 
 function addIdea() {

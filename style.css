@@ -1402,6 +1402,73 @@ html {
     margin-top: 2px;
 }
 
+/* ---- INBOX NOTE CONTROLS ---- */
+.inbox-note { flex-direction: column; }
+.inbox-note .idea-main { flex: 1; width: 100%; }
+
+.inbox-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.inbox-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+.inbox-btn:hover { background: var(--bg-card-hover); color: var(--text); }
+.inbox-btn-promote { background: var(--accent-light); color: var(--accent); border-color: rgba(108,92,231,0.2); }
+.inbox-btn-promote:hover { background: rgba(108,92,231,0.15); }
+.inbox-btn-delete { color: var(--red); }
+.inbox-btn-delete:hover { background: var(--red-bg); }
+
+.inbox-edit-form,
+.inbox-move-form,
+.inbox-task-form {
+    margin-top: 8px;
+    padding: 10px;
+    background: var(--bg-input);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
+
+.inbox-edit-form textarea,
+.inbox-task-form input[type="text"] {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    resize: vertical;
+    margin-bottom: 8px;
+}
+
+.inbox-edit-buttons {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.inbox-task-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.inbox-task-row .form-input { flex: 1; font-size: 12px; padding: 6px 8px; }
+
 .add-idea-form {
     display: flex;
     gap: 8px;
