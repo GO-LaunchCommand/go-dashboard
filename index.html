@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="style.css?v=12">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -210,7 +210,10 @@
                 <div class="detail-section actions-section">
                     <div class="section-header">
                         <h3>Actions</h3>
-                        <button class="btn btn-sm btn-primary" onclick="showAddAction()">+ Add Action</button>
+                        <div class="section-header-buttons">
+                            <button class="mic-header-btn" onclick="event.stopPropagation(); startVoiceNote()" title="Voice note">🎙️</button>
+                            <button class="btn btn-sm btn-primary" onclick="showAddAction()">+ Add Action</button>
+                        </div>
                     </div>
 
                     <!-- Add Action Form -->
@@ -282,8 +285,8 @@
         </div><!-- /.detail-overlay -->
     </div>
 
-    <!-- FLOATING VOICE NOTE BUTTON -->
-    <button class="voice-fab" id="voice-fab" onclick="startVoiceNote()" title="Quick voice note" style="display:none">
+    <!-- FLOATING VOICE NOTE BUTTON (hidden — mic now in Actions header) -->
+    <button class="voice-fab" id="voice-fab" style="display:none !important">
         <span class="voice-fab-icon" id="voice-fab-icon">🎙️</span>
         <span class="voice-fab-label" id="voice-fab-label">Voice Note</span>
     </button>
@@ -316,6 +319,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=10"></script>
+    <script src="app.js?v=11"></script>
 </body>
 </html>

@@ -991,6 +991,29 @@ body {
     font-weight: 700;
     letter-spacing: 0.3px;
 }
+.section-header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.mic-header-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.mic-header-btn:hover {
+    background: rgba(255,255,255,0.3);
+    border-color: white;
+}
 .actions-section .section-header .btn-primary {
     background: white;
     color: var(--accent);
@@ -1703,14 +1726,19 @@ body {
     .detail-icon { font-size: 32px; }
     .detail-header h2 { font-size: 20px; }
     .action-row {
-        grid-template-columns: 10px 1fr auto auto;
-        gap: 8px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 6px;
         padding: 10px 8px;
     }
     .action-row .drag-handle { display: none; }
+    .action-row .traffic-light { margin-top: 4px; flex-shrink: 0; }
+    .action-task { flex: 1; min-width: 0; font-size: 13px; line-height: 1.4; }
     .action-owner, .action-deadline { display: none; }
-    .action-task { font-size: 13px; }
     .cal-btn { display: none; }
+    .status-badge { order: 10; margin-left: 16px; }
+    .action-menu-btn { order: 11; }
     .form-row-inline { flex-direction: column; }
     .notifications-panel { right: 8px; left: 8px; width: auto; }
     .related-task-row { flex-wrap: wrap; }
@@ -1745,19 +1773,8 @@ body {
     .person-page-title-row h1 { font-size: 20px; }
     .person-search-bar { max-width: 100%; }
 
-    /* Voice FAB — bigger on mobile */
-    .voice-fab {
-        bottom: 20px;
-        right: 16px;
-        padding: 16px 24px;
-        font-size: 16px;
-        border-radius: 32px;
-        box-shadow: 0 6px 28px rgba(108, 92, 231, 0.5);
-    }
-    .voice-fab-icon { font-size: 24px; }
-
-    /* Move sidebar toggle to avoid FAB overlap */
-    .sidebar-toggle { bottom: 80px; }
+    /* Mic header button on mobile */
+    .mic-header-btn { width: 30px; height: 30px; font-size: 14px; }
 }
 
 @media (max-width: 480px) {
