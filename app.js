@@ -1275,6 +1275,165 @@ async function saveArea(area) {
     }
 }
 
+// ---- SMART VOICE COMMAND ----
+function startVoiceCommand() {
+    const btn = document.getElementById('voice-command-btn');
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Voice input not supported. Try Chrome or Edge.');
+        return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-AU';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    btn.classList.add('voice-command-recording');
+    btn.textContent = '⏹️';
+
+    recognition.onresult = (event) => {
+        const spoken = event.results[0][0].transcript.trim();
+        btn.classList.remove('voice-command-recording');
+        btn.textContent = '🎙️';
+        processVoiceCommand(spoken);
+    };
+
+    recognition.onerror = () => {
+        btn.classList.remove('voice-command-recording');
+        btn.textContent = '🎙️';
+        showToast('⚠️ Could not hear you — try again');
+    };
+
+    recognition.onend = () => {
+        btn.classList.remove('voice-command-recording');
+        btn.textContent = '🎙️';
+    };
+
+    recognition.start();
+    showToast('🎙️ Listening... say "add note to [card name] — your note"');
+}
+
+function processVoiceCommand(spoken) {
+    // Try to match: "add [note/idea/task] to [card name] [separator] [content]"
+    // Separators: dash, comma, colon, "that says", "saying", or just the rest of the sentence
+    const lower = spoken.toLowerCase();
+
+    // Find which area the user mentioned
+    let matchedArea = null;
+    let matchScore = 0;
+
+    // Build keyword map for fuzzy matching
+    const areaKeywords = {
+        'ws01-business-strategy': ['business', 'strategy', 'pricing', 'scope'],
+        'ws02-finance': ['finance', 'financial', 'money', 'budget', 'funding'],
+        'ws03-legal-compliance': ['legal', 'compliance', 'sprintlaw', 'contract', 'insurance', 'trademark'],
+        'ws04-people': ['people', 'partners', 'crystal', 'georgia', 'emma', 'team', 'contractor'],
+        'ws05-website': ['website', 'web', 'site', 'wordpress', 'squarespace', 'designer'],
+        'ws06-everfit': ['everfit', 'app', 'exercise app', 'onboarding'],
+        'ws07-exercise-content': ['exercise', 'content', 'curriculum', 'filming', 'reshoot', 'workout'],
+        'ws08-club-software': ['reporting', 'saas', 'go reporting', 'club software'],
+        'ws09-parent-resources': ['parent', 'resources', 'flipbook', 'webinar', 'expert'],
+        'ws10-club-sales': ['club', 'sales', 'affiliate', 'club sales', 'outreach'],
+        'ws11-merchandise': ['merchandise', 'merch', 'shop', 'product', 'store'],
+        'ws13-member-experience': ['support', 'customer', 'member', 'experience', 'faq', 'helpdesk', 'cancellation'],
+        'ws14-technical': ['technical', 'tech', 'infrastructure', 'analytics', 'active campaign', 'integration'],
+        'inbox': ['inbox', 'miscellaneous', 'misc', 'general']
+    };
+
+    // Also match by area name directly
+    areas.forEach(area => {
+        const name = area.name.toLowerCase();
+        // Direct name match (strongest)
+        if (lower.includes(name)) {
+            if (name.length > matchScore) {
+                matchedArea = area;
+                matchScore = name.length;
+            }
+        }
+        // Keyword match
+        const keywords = areaKeywords[area.id] || [];
+        keywords.forEach(kw => {
+            if (lower.includes(kw) && kw.length > matchScore) {
+                matchedArea = area;
+                matchScore = kw.length;
+            }
+        });
+    });
+
+    // Extract the note content — everything after the card name or after common separators
+    let noteContent = spoken;
+
+    // Try to strip the command prefix
+    const prefixPatterns = [
+        /^(?:add|new|create)\s+(?:a\s+)?(?:note|idea|task|thought)\s+(?:to|for|in|on)\s+/i,
+        /^(?:add|new|create)\s+(?:to|for|in|on)\s+/i,
+        /^(?:note|idea)\s+(?:to|for|in|on)\s+/i
+    ];
+
+    for (const pattern of prefixPatterns) {
+        if (pattern.test(noteContent)) {
+            noteContent = noteContent.replace(pattern, '');
+            break;
+        }
+    }
+
+    // Try to strip the area name from the start of remaining text
+    if (matchedArea) {
+        const namePattern = new RegExp('^' + matchedArea.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-—:,.]?\\s*', 'i');
+        noteContent = noteContent.replace(namePattern, '');
+
+        // Also try keyword stripping
+        const keywords = areaKeywords[matchedArea.id] || [];
+        for (const kw of keywords) {
+            const kwPattern = new RegExp('^' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\s*[-—:,.]?\\s*', 'i');
+            if (kwPattern.test(noteContent)) {
+                noteContent = noteContent.replace(kwPattern, '');
+                break;
+            }
+        }
+    }
+
+    // Clean up leading separators
+    noteContent = noteContent.replace(/^[-—:,.]\s*/, '').trim();
+
+    // If we couldn't parse a card or the note is empty, open the voice modal with what we have
+    if (!matchedArea || !noteContent) {
+        // Fall back to the standard voice note modal with the text pre-filled
+        document.getElementById('voice-note-text').value = spoken;
+        document.getElementById('voice-recording-indicator').style.display = 'none';
+        document.getElementById('voice-modal-title').textContent = '📝 Where should this go?';
+        document.getElementById('voice-card-picker').style.display = 'none';
+
+        const buttonsDiv = document.getElementById('voice-modal-buttons');
+        buttonsDiv.innerHTML = `
+            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Pick a Card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Inbox</button>
+        `;
+        document.getElementById('voice-modal').style.display = 'flex';
+        return;
+    }
+
+    // We have a matched area and note content — add it directly
+    if (!matchedArea.ideas) matchedArea.ideas = [];
+    matchedArea.ideas.unshift({
+        date: todayStr(),
+        by: currentUser,
+        text: noteContent.charAt(0).toUpperCase() + noteContent.slice(1)
+    });
+    addActivityLog(matchedArea, 'Voice note added');
+    saveArea(matchedArea);
+    renderCards();
+    renderNotifications();
+
+    // If we're currently viewing this area, refresh the ideas
+    if (currentAreaId === matchedArea.id) {
+        renderIdeas(matchedArea);
+    }
+
+    showToast('📌 Added to ' + matchedArea.name + ': "' + noteContent.substring(0, 40) + (noteContent.length > 40 ? '...' : '') + '"');
+}
+
 // ---- FLOATING VOICE NOTE ----
 function showVoiceFab() {
     // Voice mic is now in the Actions header bar — FAB no longer used

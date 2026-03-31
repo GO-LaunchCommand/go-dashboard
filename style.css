@@ -218,6 +218,27 @@ html {
     gap: 16px;
 }
 
+.voice-command-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2px solid #E8317F;
+    background: white;
+    color: #E8317F;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+.voice-command-btn:hover { background: #fef0f5; transform: scale(1.05); }
+.voice-command-btn.voice-command-recording {
+    background: #E8317F;
+    color: white;
+    animation: pulse 1.5s infinite;
+}
+
 .sync-status {
     display: flex;
     align-items: center;
