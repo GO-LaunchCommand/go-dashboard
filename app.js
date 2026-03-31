@@ -323,7 +323,7 @@ function renderSummary() {
             const s = teamStats[m];
             const p = s.total > 0 ? Math.round((s.complete / s.total) * 100) : 0;
             return `
-                <div class="team-metric">
+                <div class="team-metric" onclick="showPersonTasks('${m}')" style="cursor:pointer" title="Click to see ${m}'s tasks">
                     <div class="team-metric-name">${m}</div>
                     <div class="team-metric-bar"><div class="team-metric-bar-fill" style="width:${p}%"></div></div>
                     <div class="team-metric-detail">${s.complete}/${s.total} done &middot; ${s.total - s.complete} remaining</div>
@@ -331,6 +331,79 @@ function renderSummary() {
             `;
         }).join('');
     }
+}
+
+// ---- PERSON TASK LIST ----
+function showPersonTasks(person) {
+    // Gather all tasks for this person across all areas
+    const tasks = [];
+    areas.forEach(area => {
+        area.actions.forEach(action => {
+            if (action.owner === person) {
+                tasks.push({
+                    task: action.task,
+                    area: area.name,
+                    areaIcon: area.icon || '📋',
+                    deadline: action.deadline,
+                    priority: action.priority,
+                    status: action.status
+                });
+            }
+        });
+    });
+
+    // Sort: incomplete first (by priority red>amber>green), then complete at bottom
+    const pOrder = {red: 0, amber: 1, green: 2};
+    tasks.sort((a, b) => {
+        if (a.status === 'complete' && b.status !== 'complete') return 1;
+        if (a.status !== 'complete' && b.status === 'complete') return -1;
+        return (pOrder[a.priority] || 2) - (pOrder[b.priority] || 2);
+    });
+
+    const now = new Date();
+    let html = `<div class="person-tasks-overlay" onclick="if(event.target===this)closePersonTasks()">
+        <div class="person-tasks-modal">
+            <div class="person-tasks-header">
+                <h2>${person}'s Tasks (${tasks.length})</h2>
+                <button class="btn-icon" onclick="closePersonTasks()">✕</button>
+            </div>
+            <div class="person-tasks-summary">
+                <span class="person-stat">${tasks.filter(t => t.status === 'complete').length} complete</span>
+                <span class="person-stat">${tasks.filter(t => t.status === 'in-progress').length} in progress</span>
+                <span class="person-stat">${tasks.filter(t => t.status !== 'complete' && new Date(t.deadline) < now).length} overdue</span>
+            </div>
+            <div class="person-tasks-list">`;
+
+    tasks.forEach(t => {
+        const isOverdue = t.status !== 'complete' && new Date(t.deadline) < now;
+        const dbl = dateToDaysBeforeLaunch(t.deadline);
+        const dblLabel = dbl > 0 ? `(${dbl}d before launch)` : '';
+        html += `
+            <div class="person-task-row ${t.status === 'complete' ? 'complete' : ''}">
+                <span class="traffic-light ${t.priority}"></span>
+                <div class="person-task-info">
+                    <div class="person-task-name">${t.task}</div>
+                    <div class="person-task-meta">${t.areaIcon} ${t.area}</div>
+                </div>
+                <div class="person-task-right">
+                    <span class="person-task-date ${isOverdue ? 'overdue' : ''}">${formatDate(t.deadline)} <small>${dblLabel}</small></span>
+                    <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
+                </div>
+            </div>`;
+    });
+
+    html += `</div></div></div>`;
+
+    // Remove existing overlay if any
+    const existing = document.querySelector('.person-tasks-overlay');
+    if (existing) existing.remove();
+
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closePersonTasks() {
+    const el = document.querySelector('.person-tasks-overlay');
+    if (el) el.remove();
 }
 
 // ---- FILTER ----
