@@ -1058,7 +1058,69 @@ async function saveArea(area) {
 // ---- FLOATING VOICE NOTE ----
 function showVoiceFab() {
     const fab = document.getElementById('voice-fab');
-    if (fab && currentUser) fab.style.display = 'flex';
+    if (fab && currentUser) {
+        fab.style.display = 'flex';
+        initFabSwipe();
+    }
+}
+
+function initFabSwipe() {
+    const fab = document.getElementById('voice-fab');
+    if (!fab || fab._swipeInit) return;
+    fab._swipeInit = true;
+
+    let startX = 0, startRight = 0, dragging = false;
+
+    fab.addEventListener('touchstart', (e) => {
+        if (fab.classList.contains('dismissed')) return; // tap to restore handled by click
+        startX = e.touches[0].clientX;
+        startRight = parseInt(getComputedStyle(fab).right) || 24;
+        dragging = false;
+    }, { passive: true });
+
+    fab.addEventListener('touchmove', (e) => {
+        if (fab.classList.contains('dismissed')) return;
+        const dx = e.touches[0].clientX - startX;
+        if (dx > 10) { // only swipe right
+            dragging = true;
+            fab.style.transition = 'none';
+            fab.style.right = Math.max(-80, startRight - dx) + 'px';
+        }
+    }, { passive: true });
+
+    fab.addEventListener('touchend', () => {
+        fab.style.transition = '';
+        fab.style.right = '';
+        if (dragging) {
+            const currentRight = parseInt(getComputedStyle(fab).right);
+            if (currentRight < -20) {
+                dismissVoiceFab();
+            }
+            dragging = false;
+        }
+    });
+
+    // Double-tap to dismiss on desktop (right-click or long press alternative)
+    fab.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        if (!fab.classList.contains('dismissed')) {
+            dismissVoiceFab();
+        }
+    });
+}
+
+function dismissVoiceFab() {
+    const fab = document.getElementById('voice-fab');
+    fab.classList.add('dismissed');
+    fab.onclick = restoreVoiceFab;
+}
+
+function restoreVoiceFab() {
+    const fab = document.getElementById('voice-fab');
+    if (fab.classList.contains('dismissed')) {
+        fab.classList.remove('dismissed');
+        fab.onclick = startVoiceNote;
+    }
 }
 
 function startVoiceNote() {
