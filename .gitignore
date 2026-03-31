@@ -6,7 +6,6 @@ locks.json
 
 # Local dev only
 serve.py
-.claude/
 
 # OS files
 .DS_Store
