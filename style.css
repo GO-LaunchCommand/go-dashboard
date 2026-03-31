@@ -979,25 +979,25 @@ body {
 .section-header h3 { font-size: 15px; font-weight: 600; color: var(--text); }
 
 /* Actions section header — more prominent */
-.detail-section:nth-child(2) .section-header {
+.actions-section .section-header {
     background: var(--accent);
     margin: -20px -20px 16px -20px;
     padding: 14px 20px;
     border-radius: var(--radius) var(--radius) 0 0;
 }
-.detail-section:nth-child(2) .section-header h3 {
+.actions-section .section-header h3 {
     color: white;
     font-size: 16px;
     font-weight: 700;
     letter-spacing: 0.3px;
 }
-.detail-section:nth-child(2) .section-header .btn-primary {
+.actions-section .section-header .btn-primary {
     background: white;
     color: var(--accent);
     font-weight: 700;
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.detail-section:nth-child(2) .section-header .btn-primary:hover {
+.actions-section .section-header .btn-primary:hover {
     background: #f0f0f0;
 }
 
