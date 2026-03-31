@@ -88,9 +88,21 @@
     }
   ],
   "ideas": [
-    "Phase 1 launches with ~50 workouts across 12 key areas showcasing ~250 exercises — curated showcase",
-    "Remaining curriculum sections loaded post-launch as a key retention lever",
-    "Hold the line at 12 areas, 4-5 workouts each — resist scope creep"
+    {
+      "text": "Phase 1 launches with ~50 workouts across 12 key areas showcasing ~250 exercises — curated showcase",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Remaining curriculum sections loaded post-launch as a key retention lever",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Hold the line at 12 areas, 4-5 workouts each — resist scope creep",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

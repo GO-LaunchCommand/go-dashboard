@@ -88,9 +88,21 @@
     }
   ],
   "ideas": [
-    "Content volume at launch is thin — this is behind schedule",
-    "No US content = credibility gap with US-skewing audience",
-    "All existing video must be reviewed against minimum quality standards before loading"
+    {
+      "text": "Content volume at launch is thin — this is behind schedule",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "No US content = credibility gap with US-skewing audience",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "All existing video must be reviewed against minimum quality standards before loading",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

@@ -1,13 +1,13 @@
 {
   "id": "ws04-people",
   "name": "People & Partners",
-  "icon": "\ud83d\udc65",
+  "icon": "👥",
   "description": "Contractor agreements, key partner negotiations, team gaps, and strategic contact development for launch readiness.",
   "trafficLight": "red",
   "actions": [
     {
       "id": "ws04-001",
-      "task": "Crystal Yeo \u2014 close negotiation and sign contract this week",
+      "task": "Crystal Yeo — close negotiation and sign contract this week",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -16,7 +16,7 @@
     },
     {
       "id": "ws04-002",
-      "task": "Georgia Godwin \u2014 chase ambassador contract signature",
+      "task": "Georgia Godwin — chase ambassador contract signature",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -25,7 +25,7 @@
     },
     {
       "id": "ws04-003",
-      "task": "Emma Nedov \u2014 prepare updated scope of work for April contract review",
+      "task": "Emma Nedov — prepare updated scope of work for April contract review",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "amber",
@@ -43,7 +43,7 @@
     },
     {
       "id": "ws04-005",
-      "task": "James (Canberra) \u2014 lock in second shoot date urgently (child gymnast for brand video)",
+      "task": "James (Canberra) — lock in second shoot date urgently (child gymnast for brand video)",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "red",
@@ -52,7 +52,7 @@
     },
     {
       "id": "ws04-006",
-      "task": "James \u2014 prepare basic filming agreement and IP assignment clause before shoot",
+      "task": "James — prepare basic filming agreement and IP assignment clause before shoot",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "red",
@@ -61,7 +61,7 @@
     },
     {
       "id": "ws04-007",
-      "task": "Maverick (Brisbane) \u2014 prepare basic filming agreement template before any work",
+      "task": "Maverick (Brisbane) — prepare basic filming agreement template before any work",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -70,7 +70,7 @@
     },
     {
       "id": "ws04-008",
-      "task": "Betsy McNally Laouar \u2014 initiate contact, assess fit for on-camera content / advisory role",
+      "task": "Betsy McNally Laouar — initiate contact, assess fit for on-camera content / advisory role",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -79,7 +79,7 @@
     },
     {
       "id": "ws04-009",
-      "task": "Rebecca Smith \u2014 progress conversation re sports psych content and US market entry",
+      "task": "Rebecca Smith — progress conversation re sports psych content and US market entry",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -88,7 +88,7 @@
     },
     {
       "id": "ws04-010",
-      "task": "Stacey Umeh \u2014 get Sprintlaw advice before changing arrangement. Do NOT allow profit share to be signed.",
+      "task": "Stacey Umeh — get Sprintlaw advice before changing arrangement. Do NOT allow profit share to be signed.",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "red",
@@ -97,7 +97,7 @@
     },
     {
       "id": "ws04-011",
-      "task": "Shane Robertson \u2014 park until mid-May, revisit when club sales process exists",
+      "task": "Shane Robertson — park until mid-May, revisit when club sales process exists",
       "owner": "Kym",
       "deadline": "2026-05-15",
       "priority": "green",
@@ -106,8 +106,16 @@
     }
   ],
   "ideas": [
-    "US voice/face is a high priority gap \u2014 Betsy McNally Laouar or equivalent",
-    "All contractors must have written agreements and IP assignment clauses before work commences"
+    {
+      "text": "US voice/face is a high priority gap — Betsy McNally Laouar or equivalent",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "All contractors must have written agreements and IP assignment clauses before work commences",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

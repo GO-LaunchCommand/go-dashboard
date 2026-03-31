@@ -1,13 +1,13 @@
 {
   "id": "ws01-business-strategy",
   "name": "Business Strategy",
-  "icon": "\ud83c\udfaf",
+  "icon": "🎯",
   "description": "Core strategic decisions including pricing, scope freeze, club offering model, and key partnership locks required before launch.",
   "trafficLight": "red",
   "actions": [
     {
       "id": "ws01-001",
-      "task": "Schedule pricing decision session with Scott \u2014 must be decided by end of April",
+      "task": "Schedule pricing decision session with Scott — must be decided by end of April",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "red",
@@ -16,7 +16,7 @@
     },
     {
       "id": "ws01-002",
-      "task": "Schedule scope freeze meeting \u2014 agree exactly what is in and out at launch",
+      "task": "Schedule scope freeze meeting — agree exactly what is in and out at launch",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "red",
@@ -34,7 +34,7 @@
     },
     {
       "id": "ws01-004",
-      "task": "Lock Crystal Yeo \u2014 get contract signed this week",
+      "task": "Lock Crystal Yeo — get contract signed this week",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -43,7 +43,7 @@
     },
     {
       "id": "ws01-005",
-      "task": "Initiate contact with Betsy McNally Laouar \u2014 US coach, addresses top strategic risk",
+      "task": "Initiate contact with Betsy McNally Laouar — US coach, addresses top strategic risk",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -52,7 +52,7 @@
     },
     {
       "id": "ws01-006",
-      "task": "Progress Rebecca Smith \u2014 US credibility + sports psych content",
+      "task": "Progress Rebecca Smith — US credibility + sports psych content",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -70,8 +70,16 @@
     }
   ],
   "ideas": [
-    "Consider 3-tier pricing model at launch for marketing psychology",
-    "US market voice is the #2 strategic risk after content quality"
+    {
+      "text": "Consider 3-tier pricing model at launch for marketing psychology",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "US market voice is the #2 strategic risk after content quality",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

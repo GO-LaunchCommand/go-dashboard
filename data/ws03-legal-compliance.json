@@ -1,13 +1,13 @@
 {
   "id": "ws03-legal-compliance",
   "name": "Legal, Compliance & Insurance",
-  "icon": "\u2696\ufe0f",
+  "icon": "⚖️",
   "description": "Share transfer, Sprintlaw brief, contracts, trademark registration, insurance, and multi-jurisdiction compliance requirements.",
   "trafficLight": "red",
   "actions": [
     {
       "id": "ws03-001",
-      "task": "Share transfer to Scott (45%) \u2014 engage corporate lawyer THIS WEEK. Must happen before company is profitable.",
+      "task": "Share transfer to Scott (45%) — engage corporate lawyer THIS WEEK. Must happen before company is profitable.",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -16,7 +16,7 @@
     },
     {
       "id": "ws03-002",
-      "task": "Send Sprintlaw brief \u2014 sitting ready, just needs to be sent. Do this today.",
+      "task": "Send Sprintlaw brief — sitting ready, just needs to be sent. Do this today.",
       "owner": "Kym",
       "deadline": "2026-04-01",
       "priority": "red",
@@ -25,7 +25,7 @@
     },
     {
       "id": "ws03-003",
-      "task": "Chase Georgia Godwin contract signature \u2014 nothing public-facing can proceed without this",
+      "task": "Chase Georgia Godwin contract signature — nothing public-facing can proceed without this",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -43,7 +43,7 @@
     },
     {
       "id": "ws03-005",
-      "task": "Add club affiliate agreement to Sprintlaw brief scope \u2014 needed by end of April",
+      "task": "Add club affiliate agreement to Sprintlaw brief scope — needed by end of April",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -52,7 +52,7 @@
     },
     {
       "id": "ws03-006",
-      "task": "Get Sprintlaw advice on Stacey Umeh engagement \u2014 before any formal wind-down",
+      "task": "Get Sprintlaw advice on Stacey Umeh engagement — before any formal wind-down",
       "owner": "Kym",
       "deadline": "2026-04-15",
       "priority": "red",
@@ -79,7 +79,7 @@
     },
     {
       "id": "ws03-009",
-      "task": "Prepare basic filming agreement template for James and Maverick \u2014 needed before next shoot",
+      "task": "Prepare basic filming agreement template for James and Maverick — needed before next shoot",
       "owner": "Kym",
       "deadline": "2026-04-30",
       "priority": "amber",
@@ -97,7 +97,7 @@
     },
     {
       "id": "ws03-011",
-      "task": "Confirm Crystal Yeo contract terms once negotiation concludes \u2014 sign immediately",
+      "task": "Confirm Crystal Yeo contract terms once negotiation concludes — sign immediately",
       "owner": "Kym",
       "deadline": "2026-04-07",
       "priority": "red",
@@ -106,7 +106,7 @@
     },
     {
       "id": "ws03-012",
-      "task": "T&Cs must be finalised by end of May 2026 \u2014 cannot launch without them",
+      "task": "T&Cs must be finalised by end of May 2026 — cannot launch without them",
       "owner": "Kym",
       "deadline": "2026-05-31",
       "priority": "red",
@@ -115,7 +115,11 @@
     }
   ],
   "ideas": [
-    "Gymnastics Australia naming conflict \u2014 need legal advice on coexistence of 'Gymnastics Online' name"
+    {
+      "text": "Gymnastics Australia naming conflict — need legal advice on coexistence of 'Gymnastics Online' name",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

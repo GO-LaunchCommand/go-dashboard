@@ -1057,11 +1057,7 @@ async function saveArea(area) {
 
 // ---- FLOATING VOICE NOTE ----
 function showVoiceFab() {
-    const fab = document.getElementById('voice-fab');
-    if (fab && currentUser) {
-        fab.style.display = 'flex';
-        initFabSwipe();
-    }
+    // Voice mic is now in the Actions header bar — FAB no longer used
 }
 
 function initFabSwipe() {

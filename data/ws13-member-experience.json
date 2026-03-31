@@ -88,9 +88,21 @@
     }
   ],
   "ideas": [
-    "Poor support directly drives churn and negative word-of-mouth — this is a retention tool",
-    "Freshdesk free tier is recommended — tickets tracked, templated responses, nothing gets lost",
-    "Any complaint or refund request — Kym reviews personally at launch"
+    {
+      "text": "Poor support directly drives churn and negative word-of-mouth — this is a retention tool",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Freshdesk free tier is recommended — tickets tracked, templated responses, nothing gets lost",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Any complaint or refund request — Kym reviews personally at launch",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

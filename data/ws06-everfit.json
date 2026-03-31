@@ -88,8 +88,16 @@
     }
   ],
   "ideas": [
-    "8-week build timeline is tight with no buffer — any delays compress further",
-    "Onboarding not designed is the leading cause of early subscription churn"
+    {
+      "text": "8-week build timeline is tight with no buffer — any delays compress further",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Onboarding not designed is the leading cause of early subscription churn",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

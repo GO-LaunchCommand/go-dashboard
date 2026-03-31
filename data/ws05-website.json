@@ -97,8 +97,16 @@
     }
   ],
   "ideas": [
-    "Don't wait for the perfect designer — a solid Phase 1 on Squarespace in 2 weeks beats a perfect WordPress site in 8 weeks",
-    "Phase 1 must NOT show pricing or detailed product features — keep it vague but professional"
+    {
+      "text": "Don't wait for the perfect designer — a solid Phase 1 on Squarespace in 2 weeks beats a perfect WordPress site in 8 weeks",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Phase 1 must NOT show pricing or detailed product features — keep it vague but professional",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

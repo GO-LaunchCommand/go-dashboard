@@ -115,8 +115,16 @@
     }
   ],
   "ideas": [
-    "Affiliate tracking not solved = cannot launch affiliate program; must be resolved before club outreach mid-May",
-    "End-to-end testing of full subscriber journey required before launch — individual systems may work but fail when connected"
+    {
+      "text": "Affiliate tracking not solved = cannot launch affiliate program; must be resolved before club outreach mid-May",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "End-to-end testing of full subscriber journey required before launch — individual systems may work but fail when connected",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

@@ -79,9 +79,21 @@
     }
   ],
   "ideas": [
-    "GO Reporting + SaaS expansion elevates GO from 'a parent app' to 'the operating system for gymnastics clubs and families'",
-    "Start with freemium (Option A) to rapidly acquire affiliates, transition to paid as platform expands",
-    "Full SaaS scope is a 3-12 month build — today's expert meeting determines the entire club launch strategy"
+    {
+      "text": "GO Reporting + SaaS expansion elevates GO from 'a parent app' to 'the operating system for gymnastics clubs and families'",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Start with freemium (Option A) to rapidly acquire affiliates, transition to paid as platform expands",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Full SaaS scope is a 3-12 month build — today's expert meeting determines the entire club launch strategy",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

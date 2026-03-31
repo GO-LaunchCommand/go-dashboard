@@ -43,9 +43,21 @@
     }
   ],
   "ideas": [
-    "Post-launch only — do not consume any pre-launch bandwidth",
-    "GO-branded training tools aligned with exercise program create natural revenue (blocks, bands, flexibility aids)",
-    "Phase 2 opportunity: GO-branded apparel (leotards, training wear)"
+    {
+      "text": "Post-launch only — do not consume any pre-launch bandwidth",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "GO-branded training tools aligned with exercise program create natural revenue (blocks, bands, flexibility aids)",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Phase 2 opportunity: GO-branded apparel (leotards, training wear)",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }

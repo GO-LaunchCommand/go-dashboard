@@ -97,9 +97,21 @@
     }
   ],
   "ideas": [
-    "Commission model: 25% of subscriber revenue for first 3 months, then 10% ongoing in perpetuity",
-    "GO Reporting free access is the primary hook for club sign-ups",
-    "Do NOT activate Shane Robertson until materials are ready"
+    {
+      "text": "Commission model: 25% of subscriber revenue for first 3 months, then 10% ongoing in perpetuity",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "GO Reporting free access is the primary hook for club sign-ups",
+      "by": "Kym",
+      "date": "2026-03-31"
+    },
+    {
+      "text": "Do NOT activate Shane Robertson until materials are ready",
+      "by": "Kym",
+      "date": "2026-03-31"
+    }
   ],
   "activityLog": []
 }
