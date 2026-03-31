@@ -1,0 +1,21 @@
+{
+  "name": "GO Launch Command Centre",
+  "short_name": "GO Launch",
+  "description": "Pre-launch project dashboard for Gymnastics Online",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#E8317F",
+  "theme_color": "#E8317F",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
