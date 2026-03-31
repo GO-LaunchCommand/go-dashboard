@@ -1138,12 +1138,29 @@ function startVoiceNote() {
     const title = document.getElementById('voice-modal-title');
     const fab = document.getElementById('voice-fab');
     const picker = document.getElementById('voice-card-picker');
+    const buttonsDiv = document.getElementById('voice-modal-buttons');
 
     textarea.value = '';
     indicator.style.display = 'flex';
     title.textContent = '🎙️ Recording...';
     picker.style.display = 'none';
     modal.style.display = 'flex';
+
+    // Context-aware buttons
+    if (currentAreaId) {
+        const currentArea = areas.find(a => a.id === currentAreaId);
+        const areaName = currentArea ? currentArea.name : 'this card';
+        buttonsDiv.innerHTML = `
+            <button class="btn btn-primary voice-action-btn" onclick="addToCurrentCard()">📌 Add to ${areaName}</button>
+            <button class="btn btn-outline voice-action-btn" onclick="showCardPicker()">📋 Different card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Inbox</button>
+        `;
+    } else {
+        buttonsDiv.innerHTML = `
+            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Add to a Card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Add to Inbox</button>
+        `;
+    }
 
     // Animate FAB to recording state
     fab.classList.add('recording');
@@ -1271,6 +1288,29 @@ function addToSelectedCard() {
 
     document.getElementById('voice-modal').style.display = 'none';
     showToast('✅ Added to ' + area.name);
+}
+
+function addToCurrentCard() {
+    const text = document.getElementById('voice-note-text').value.trim();
+    if (!text) { alert('No note to add.'); return; }
+
+    const area = areas.find(a => a.id === currentAreaId);
+    if (!area) return;
+
+    if (!area.ideas) area.ideas = [];
+    area.ideas.unshift({
+        date: todayStr(),
+        by: currentUser,
+        text: text
+    });
+    addActivityLog(area, 'Voice note added');
+    saveArea(area);
+    renderIdeas(area);
+    renderCards();
+    renderNotifications();
+
+    document.getElementById('voice-modal').style.display = 'none';
+    showToast('📌 Added to ' + area.name);
 }
 
 function showToast(message) {

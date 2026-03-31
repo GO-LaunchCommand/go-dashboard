@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=19">
+    <link rel="stylesheet" href="style.css?v=20">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -313,7 +313,7 @@
             </div>
             <div class="voice-modal-actions">
                 <div class="voice-modal-label">Where should this go?</div>
-                <div class="voice-modal-buttons">
+                <div class="voice-modal-buttons" id="voice-modal-buttons">
                     <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Add to a Card</button>
                     <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Add to Inbox</button>
                 </div>
@@ -326,6 +326,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=13"></script>
+    <script src="app.js?v=14"></script>
 </body>
 </html>

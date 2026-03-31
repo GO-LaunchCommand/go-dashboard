@@ -1627,13 +1627,16 @@ html {
 
 .voice-modal-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 .voice-action-btn {
     flex: 1;
+    min-width: 0;
     justify-content: center;
-    padding: 14px 16px !important;
-    font-size: 14px !important;
+    padding: 12px 12px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
 }
 
 /* ---- TOAST NOTIFICATION ---- */
