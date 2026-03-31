@@ -4,11 +4,11 @@
 
 // ---- CONFIG ----
 const CONFIG = {
-    apiUrl: null,
+    apiUrl: 'https://gymnasticsonline.com/go-api/api.php',
     password: 'launch26',
     refreshInterval: 30000,
     lockDuration: 5 * 60 * 1000,
-    localMode: true,
+    localMode: false,
 };
 
 const TEAM_MEMBERS = ['Kym', 'Scott', 'Brendan'];
