@@ -1049,22 +1049,23 @@ html {
     gap: 8px;
 }
 .mic-header-btn {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.5);
-    background: rgba(255,255,255,0.15);
+    border: 2px solid white;
+    background: #E8317F;
     color: white;
-    font-size: 16px;
+    font-size: 17px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(232,49,127,0.4);
 }
 .mic-header-btn:hover {
-    background: rgba(255,255,255,0.3);
-    border-color: white;
+    background: #d42870;
+    transform: scale(1.1);
 }
 .actions-section .section-header .btn-primary {
     background: white;
