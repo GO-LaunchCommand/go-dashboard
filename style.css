@@ -1414,13 +1414,15 @@ body {
 .voice-fab:hover { background: var(--accent-hover); box-shadow: 0 6px 24px rgba(108, 92, 231, 0.5); }
 .voice-fab:active { transform: none; }
 .voice-fab.dismissed {
-    right: -70px;
-    opacity: 0.3;
-    padding: 14px;
+    right: -2px;
+    opacity: 1;
+    padding: 12px 10px 12px 14px;
     border-radius: 28px 0 0 28px;
+    background: var(--text-dim);
+    box-shadow: -2px 2px 8px rgba(0,0,0,0.15);
 }
 .voice-fab.dismissed .voice-fab-label { display: none; }
-.voice-fab.dismissed:hover { right: -60px; opacity: 0.6; }
+.voice-fab.dismissed:hover { background: var(--accent); }
 .voice-fab.recording {
     background: var(--red);
     box-shadow: 0 4px 20px rgba(224, 62, 62, 0.4);
