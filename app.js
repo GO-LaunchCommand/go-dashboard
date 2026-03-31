@@ -775,6 +775,15 @@ function renderActions(area) {
                     <option value="amber" ${action.priority === 'amber' ? 'selected' : ''}>🟡 Medium</option>
                     <option value="green" ${action.priority === 'green' ? 'selected' : ''}>🟢 Low</option>
                 </select>
+            </div>
+            <div class="action-reminder-row" onclick="event.stopPropagation()">
+                <span style="font-size:12px; color: var(--text-dim);">📅 Reminder:</span>
+                <input type="date" id="remind-date-${action.id}" value="${action.deadline || ''}" style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text); font-family:inherit; font-size:12px;">
+                <input type="time" id="remind-time-${action.id}" value="09:00" style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text); font-family:inherit; font-size:12px; width:90px;">
+                <select id="remind-who-${action.id}" style="padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text); font-family:inherit; font-size:12px;">
+                    ${TEAM_MEMBERS.map(m => `<option value="${m}" ${m === action.owner ? 'selected' : ''}>${m}</option>`).join('')}
+                </select>
+                <button class="btn btn-sm btn-primary" onclick="sendCalendarReminder('${action.id}')">Send Invite</button>
             </div>`;
             html += `</div>`;
         }
@@ -977,46 +986,122 @@ function addUpdate(actionId) {
     saveArea(area); renderActions(area);
 }
 
-// ---- CALENDAR .ICS DOWNLOAD ----
+// ---- CALENDAR REMINDERS ----
 function downloadICS(actionId) {
+    // Quick download from the action row button (desktop)
+    const icsData = buildICS(actionId);
+    if (icsData) downloadICSFile(icsData.ics, icsData.action.task);
+}
+
+function sendCalendarReminder(actionId) {
+    // Full reminder from expanded view — with date, time, and recipient picker
+    const dateInput = document.getElementById('remind-date-' + actionId);
+    const timeInput = document.getElementById('remind-time-' + actionId);
+    const whoSelect = document.getElementById('remind-who-' + actionId);
+
+    const date = dateInput ? dateInput.value : null;
+    const time = timeInput ? timeInput.value : '09:00';
+    const who = whoSelect ? whoSelect.value : null;
+
+    if (!date) { alert('Please pick a reminder date.'); return; }
+
+    const icsData = buildICS(actionId, date, time);
+    if (!icsData) return;
+
+    if (CONFIG.localMode) {
+        // Local mode — download the .ics file, user adds to calendar manually
+        downloadICSFile(icsData.ics, icsData.action.task);
+        showToast('📅 Calendar file downloaded — add to your calendar');
+    } else {
+        // Live mode — email the .ics as a calendar invite
+        const email = TEAM_EMAILS[who] || TEAM_EMAILS[icsData.action.owner];
+        fetch(CONFIG.apiUrl + '?action=calendar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                task: icsData.action.task,
+                deadline: date,
+                area: icsData.areaName,
+                owner: who || icsData.action.owner
+            })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                showToast('📅 Calendar invite sent to ' + (who || icsData.action.owner));
+            } else {
+                showToast('⚠️ Failed to send — ' + (data.detail || 'check email config'));
+            }
+        }).catch(() => {
+            // Fallback to download
+            downloadICSFile(icsData.ics, icsData.action.task);
+            showToast('📅 Downloaded .ics file (email send failed)');
+        });
+    }
+}
+
+function buildICS(actionId, overrideDate, overrideTime) {
     let action = null, areaName = '';
     for (const area of areas) {
         const found = area.actions.find(a => a.id === actionId);
         if (found) { action = found; areaName = area.name; break; }
     }
-    if (!action) return;
+    if (!action) return null;
 
-    const deadline = new Date(action.deadline);
-    const dtStart = deadline.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-    // All-day event
-    const dtStartDate = action.deadline.replace(/-/g, '');
-    const endDate = new Date(deadline); endDate.setDate(endDate.getDate() + 1);
-    const dtEndDate = endDate.toISOString().split('T')[0].replace(/-/g, '');
+    const date = overrideDate || action.deadline;
+    const time = overrideTime || '09:00';
+    if (!date) return null;
+
+    // Build timezone-aware event (Brisbane = Australia/Brisbane, AEST UTC+10)
+    const dtDate = date.replace(/-/g, '');
+    const dtTime = time.replace(':', '') + '00';
+    const dtStart = dtDate + 'T' + dtTime;
+
+    // End time = 1 hour after start
+    const startHour = parseInt(time.split(':')[0]);
+    const endHour = String(startHour + 1).padStart(2, '0');
+    const dtEnd = dtDate + 'T' + endHour + time.split(':')[1] + '00';
+
+    const uid = 'go-' + Date.now() + '-' + Math.random().toString(36).substring(2, 8) + '@gymnasticsonline.com';
 
     const ics = [
         'BEGIN:VCALENDAR',
         'VERSION:2.0',
-        'PRODID:-//Launch Command Centre//EN',
+        'PRODID:-//GO Launch Command Centre//EN',
+        'METHOD:REQUEST',
+        'BEGIN:VTIMEZONE',
+        'TZID:Australia/Brisbane',
+        'BEGIN:STANDARD',
+        'DTSTART:19700101T000000',
+        'TZOFFSETFROM:+1000',
+        'TZOFFSETTO:+1000',
+        'TZNAME:AEST',
+        'END:STANDARD',
+        'END:VTIMEZONE',
         'BEGIN:VEVENT',
-        `DTSTART;VALUE=DATE:${dtStartDate}`,
-        `DTEND;VALUE=DATE:${dtEndDate}`,
-        `SUMMARY:${action.task}`,
-        `DESCRIPTION:Area: ${areaName}\\nOwner: ${action.owner}\\nPriority: ${action.priority}\\nStatus: ${formatStatus(action.status)}`,
-        `ORGANIZER;CN=Launch Command Centre:mailto:admin@gymnasticsonline.com`,
+        'UID:' + uid,
+        'DTSTART;TZID=Australia/Brisbane:' + dtStart,
+        'DTEND;TZID=Australia/Brisbane:' + dtEnd,
+        'SUMMARY:GO Launch: ' + action.task,
+        'DESCRIPTION:Area: ' + areaName + '\\nOwner: ' + action.owner + '\\nPriority: ' + action.priority + '\\nStatus: ' + formatStatus(action.status),
+        'ORGANIZER;CN=GO Launch:mailto:admin@gymnasticsonline.com',
         'BEGIN:VALARM',
-        'TRIGGER:-PT24H',
+        'TRIGGER:-PT30M',
         'ACTION:DISPLAY',
-        `DESCRIPTION:Reminder: ${action.task} is due tomorrow`,
+        'DESCRIPTION:Reminder: ' + action.task,
         'END:VALARM',
         'END:VEVENT',
         'END:VCALENDAR'
     ].join('\r\n');
 
-    const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+    return { ics, action, areaName };
+}
+
+function downloadICSFile(icsContent, taskName) {
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${action.task.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}.ics`;
+    a.download = (taskName || 'reminder').substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-') + '.ics';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

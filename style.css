@@ -1290,6 +1290,16 @@ html {
     flex-wrap: wrap;
 }
 
+.action-reminder-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+    align-items: center;
+    flex-wrap: wrap;
+}
+
 .action-status-change select {
     padding: 4px 8px;
     border-radius: var(--radius-sm);
