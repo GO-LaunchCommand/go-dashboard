@@ -449,24 +449,36 @@ function renderPersonPage(person, allTasks) {
     const overdueCount = allTasks.filter(t => t.status !== 'complete' && new Date(t.deadline) < now).length;
 
     const page = document.getElementById('person-page');
-    page.innerHTML = `
-        <div class="person-page-header">
-            <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
-            <div class="person-page-title-row">
-                <h1>${person}'s Tasks <span class="person-page-count">${allTasks.length}</span></h1>
+
+    // Only build the header once — don't rebuild on search (keeps input focused)
+    if (!page.querySelector('.person-page-header')) {
+        page.innerHTML = `
+            <div class="person-page-header">
+                <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
+                <div class="person-page-title-row">
+                    <h1 id="person-page-title">${person}'s Tasks <span class="person-page-count">${allTasks.length}</span></h1>
+                </div>
+                <div class="person-page-stats" id="person-page-stats"></div>
+                <div class="person-search-bar">
+                    <input type="text" id="person-search-input" class="form-input" placeholder="Search tasks or areas..."
+                        value="${personTasksSearchQuery}"
+                        oninput="personTasksSearchQuery=this.value; renderPersonPage('${person}', window._personAllTasks)">
+                </div>
             </div>
-            <div class="person-page-stats">
-                <span class="person-stat-pill">${completeCount} ✅ complete</span>
-                <span class="person-stat-pill">${inProgCount} 🟡 in progress</span>
-                <span class="person-stat-pill ${overdueCount > 0 ? 'overdue' : ''}">${overdueCount} 🔴 overdue</span>
-            </div>
-            <div class="person-search-bar">
-                <input type="text" id="person-search-input" class="form-input" placeholder="Search tasks or areas..."
-                    value="${personTasksSearchQuery}"
-                    oninput="personTasksSearchQuery=this.value; renderPersonPage('${person}', window._personAllTasks)">
-            </div>
-        </div>
-        <div class="person-tasks-grid">
+            <div class="person-tasks-grid" id="person-tasks-grid"></div>
+        `;
+    }
+
+    // Update stats
+    document.getElementById('person-page-stats').innerHTML = `
+        <span class="person-stat-pill">${completeCount} ✅ complete</span>
+        <span class="person-stat-pill">${inProgCount} 🟡 in progress</span>
+        <span class="person-stat-pill ${overdueCount > 0 ? 'overdue' : ''}">${overdueCount} 🔴 overdue</span>
+    `;
+
+    // Update grid only
+    const grid = document.getElementById('person-tasks-grid');
+    grid.innerHTML = `
             ${tasks.map(t => {
                 const isOverdue = t.status !== 'complete' && t.deadline && new Date(t.deadline) < now;
                 const dbl = dateToDaysBeforeLaunch(t.deadline);
@@ -489,7 +501,6 @@ function renderPersonPage(person, allTasks) {
                     </div>`;
             }).join('')}
             ${tasks.length === 0 ? '<div class="person-no-results">No tasks match your search.</div>' : ''}
-        </div>
     `;
 
     // Store all tasks for search re-renders
@@ -503,8 +514,10 @@ function renderPersonPage(person, allTasks) {
 }
 
 function closePersonTasks() {
-    document.getElementById('person-page').style.display = 'none';
-    document.getElementById('person-page').innerHTML = '';
+    const page = document.getElementById('person-page');
+    page.style.display = 'none';
+    page.innerHTML = '';
+    personTasksSearchQuery = '';
     document.getElementById('dashboard').querySelector('.launch-banner').style.display = '';
     document.getElementById('dashboard').querySelector('.metrics-bar').style.display = '';
     document.getElementById('dashboard').querySelector('.filter-bar').style.display = '';
