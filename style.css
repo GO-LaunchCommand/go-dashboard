@@ -1765,7 +1765,7 @@ body {
         resize: none;
     }
     .sidebar.open { left: 0; }
-    .sidebar-toggle { display: block; }
+    .sidebar-toggle { display: none; }
 
     /* Person tasks page mobile */
     .person-page { padding: 0 16px 24px; }
