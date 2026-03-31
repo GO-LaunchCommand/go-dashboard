@@ -1,0 +1,95 @@
+{
+  "id": "ws06-everfit",
+  "name": "Exercise App (Everfit)",
+  "icon": "📱",
+  "description": "Everfit enterprise migration, exercise content loading, onboarding flow design, AI recipe configuration, and coach access setup.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws06-001",
+      "task": "Crystal Yeo signed — immediately begin exercise approval process, share Consolidated Curriculum v3",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws06-002",
+      "task": "Confirm reshoot list with Crystal before booking any filming days",
+      "owner": "Kym",
+      "deadline": "2026-04-21",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws06-003",
+      "task": "Design onboarding flow — Kym to draft in April so Scott can build in May/June",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-004",
+      "task": "Sign Everfit enterprise plan — target beginning of May 2026 (do not sign early)",
+      "owner": "Scott",
+      "deadline": "2026-05-01",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-005",
+      "task": "Build full Everfit setup plan with Scott — content loading schedule, configuration checklist, testing plan",
+      "owner": "Scott",
+      "deadline": "2026-05-07",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-006",
+      "task": "Book 2 filming days in Melbourne — target May 2026, coordinate with Crystal and videographer",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-007",
+      "task": "Progress dietitian review of AI recipe function with Zoe Power and Ashleigh Mitchell",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-008",
+      "task": "Decide club access scope at launch vs post-launch (informed by WS01 decision)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws06-009",
+      "task": "Identify content loading helper for Scott",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "8-week build timeline is tight with no buffer — any delays compress further",
+    "Onboarding not designed is the leading cause of early subscription churn"
+  ],
+  "activityLog": []
+}

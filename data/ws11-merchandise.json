@@ -1,0 +1,51 @@
+{
+  "id": "ws11-merchandise",
+  "name": "Merchandise & Shop",
+  "icon": "🛍️",
+  "description": "Online shop with partner products and GO-branded equipment — explicitly post-launch, no pre-launch action required.",
+  "trafficLight": "green",
+  "actions": [
+    {
+      "id": "ws11-001",
+      "task": "Confirm product range with Emma Nedov — products and commercial arrangement",
+      "owner": "Kym",
+      "deadline": "2026-09-01",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws11-002",
+      "task": "Confirm product range with Georgia Godwin — products suitable for GO shop",
+      "owner": "Kym",
+      "deadline": "2026-09-01",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws11-003",
+      "task": "Decide fulfilment approach — direct shipping, third-party, or dropshipping",
+      "owner": "Kym",
+      "deadline": "2026-10-01",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws11-004",
+      "task": "Build shop into website — Phase 2 website update post-launch",
+      "owner": "Scott",
+      "deadline": "2026-10-01",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Post-launch only — do not consume any pre-launch bandwidth",
+    "GO-branded training tools aligned with exercise program create natural revenue (blocks, bands, flexibility aids)",
+    "Phase 2 opportunity: GO-branded apparel (leotards, training wear)"
+  ],
+  "activityLog": []
+}

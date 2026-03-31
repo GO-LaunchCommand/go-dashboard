@@ -1,0 +1,105 @@
+{
+  "id": "ws10-club-sales",
+  "name": "Club Sales",
+  "icon": "🏢",
+  "description": "Club outreach strategy, information pack design, affiliate agreement, target list building, and sales process documentation — nothing exists yet.",
+  "trafficLight": "red",
+  "actions": [
+    {
+      "id": "ws10-001",
+      "task": "Design club information pack — polished PDF, 4-6 pages, GO brand colours",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-002",
+      "task": "Add affiliate agreement to Sprintlaw brief — legal draft needed by end of April",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-003",
+      "task": "Research and build target club list — AU clubs first (50-100 priority contacts via GA register)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-004",
+      "task": "Build affiliate code system — unique codes per club, 12-month attribution, commission tracking",
+      "owner": "Scott",
+      "deadline": "2026-05-31",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-005",
+      "task": "Investigate whether Everfit enterprise includes affiliate/referral tracking natively",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-006",
+      "task": "Document club sales process — initial contact, follow-up, agreement, code issuance, onboarding",
+      "owner": "Kym",
+      "deadline": "2026-05-07",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-007",
+      "task": "Prepare Gymnastics Australia naming conflict response",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-008",
+      "task": "Activate Shane Robertson — mid-May once pack, agreement, and process exist",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-009",
+      "task": "First club outreach — mid-May 2026",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws10-010",
+      "task": "Target: 10-20 clubs signed before soft launch July 1",
+      "owner": "Kym",
+      "deadline": "2026-07-01",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Commission model: 25% of subscriber revenue for first 3 months, then 10% ongoing in perpetuity",
+    "GO Reporting free access is the primary hook for club sign-ups",
+    "Do NOT activate Shane Robertson until materials are ready"
+  ],
+  "activityLog": []
+}

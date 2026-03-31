@@ -1,0 +1,68 @@
+{
+  "id": "ws02-finance",
+  "name": "Finance",
+  "icon": "\ud83d\udcb0",
+  "description": "Financial modelling, pricing decisions, app store impact analysis, salary trigger definition, and monthly tracking setup.",
+  "trafficLight": "red",
+  "actions": [
+    {
+      "id": "ws02-001",
+      "task": "Pricing decision \u2014 schedule dedicated session with Scott, decide before end of April",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws02-002",
+      "task": "App store decision \u2014 confirm whether GO distributes via iOS/Android; if yes, update forecast (15% fee)",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws02-003",
+      "task": "Define salary/drawings trigger \u2014 agree specific threshold (3 months positive EBITDA + 6 months opex reserve)",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws02-004",
+      "task": "Brief Scott on pessimistic scenario targets and key assumptions",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws02-005",
+      "task": "Build simple monthly actuals tracker template \u2014 ready from day 1 post-launch",
+      "owner": "Kym",
+      "deadline": "2026-06-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws02-006",
+      "task": "Confirm AUD/USD reporting approach for costs",
+      "owner": "Kym",
+      "deadline": "2026-05-30",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Pricing set too low risk \u2014 $39 may undervalue the product",
+    "App store fees unmodelled \u2014 if iOS/Android, 15-30% fee reduces EBITDA by $100K+/year"
+  ],
+  "activityLog": []
+}

@@ -1,0 +1,96 @@
+{
+  "id": "ws07-exercise-content",
+  "name": "Exercise Content",
+  "icon": "🤸",
+  "description": "Exercise library curation, Crystal Yeo review process, reshoot planning, content loading pipeline, and phased launch content plan.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws07-001",
+      "task": "Share Consolidated Curriculum v3 document with Crystal immediately on signing",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws07-002",
+      "task": "Agree 12 launch areas with Crystal — within first week of engagement",
+      "owner": "Kym",
+      "deadline": "2026-04-14",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws07-003",
+      "task": "Crystal to confirm reshoot list — before any filming is booked",
+      "owner": "Kym",
+      "deadline": "2026-04-21",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws07-004",
+      "task": "Confirm Kinder Gym scope — Phase 1 or Phase 2?",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws07-005",
+      "task": "Identify and engage content loading helper for Everfit upload (250 exercises, 50 workouts)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws07-006",
+      "task": "Build final loading sheet — exercise list, video file names, workout assignments, order",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws07-007",
+      "task": "Book 2 filming days in Melbourne — target May 2026",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws07-008",
+      "task": "Load content into Everfit — May/June 2026",
+      "owner": "Scott",
+      "deadline": "2026-06-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws07-009",
+      "task": "QC all 50 launch workouts end-to-end before July 1",
+      "owner": "Scott",
+      "deadline": "2026-06-25",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Phase 1 launches with ~50 workouts across 12 key areas showcasing ~250 exercises — curated showcase",
+    "Remaining curriculum sections loaded post-launch as a key retention lever",
+    "Hold the line at 12 areas, 4-5 workouts each — resist scope creep"
+  ],
+  "activityLog": []
+}

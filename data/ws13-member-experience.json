@@ -1,0 +1,96 @@
+{
+  "id": "ws13-member-experience",
+  "name": "Customer Support & Member Experience",
+  "icon": "💬",
+  "description": "Support channels, FAQ, cancellation process, onboarding emails, refund policy, and member retention touchpoints — nothing exists yet.",
+  "trafficLight": "red",
+  "actions": [
+    {
+      "id": "ws13-001",
+      "task": "Confirm Everfit enterprise cancellation flow — Scott to investigate and document (legal requirement)",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-002",
+      "task": "Select and set up helpdesk — Freshdesk (free tier) or Help Scout",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-003",
+      "task": "Set up dedicated support email address (support@ or hello@)",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-004",
+      "task": "Write FAQ — 15-20 questions in Kym's voice; live on website before launch",
+      "owner": "Kym",
+      "deadline": "2026-06-01",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-005",
+      "task": "Create response templates for 10 most common queries",
+      "owner": "Kym",
+      "deadline": "2026-06-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-006",
+      "task": "Define refund policy — clear, compliant with AU/US/UK law (coordinate with Sprintlaw WS03)",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-007",
+      "task": "Build 7-day onboarding email sequence (Day 0 welcome through Day 7 trial ending)",
+      "owner": "Kym",
+      "deadline": "2026-06-01",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-008",
+      "task": "Write winback email for cancelled subscribers (single email, 30 days post-cancel)",
+      "owner": "Kym",
+      "deadline": "2026-06-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws13-009",
+      "task": "Build monthly content update email template for post-launch",
+      "owner": "Kym",
+      "deadline": "2026-06-25",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Poor support directly drives churn and negative word-of-mouth — this is a retention tool",
+    "Freshdesk free tier is recommended — tickets tracked, templated responses, nothing gets lost",
+    "Any complaint or refund request — Kym reviews personally at launch"
+  ],
+  "activityLog": []
+}

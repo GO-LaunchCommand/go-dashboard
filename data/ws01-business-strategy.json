@@ -1,0 +1,77 @@
+{
+  "id": "ws01-business-strategy",
+  "name": "Business Strategy",
+  "icon": "\ud83c\udfaf",
+  "description": "Core strategic decisions including pricing, scope freeze, club offering model, and key partnership locks required before launch.",
+  "trafficLight": "red",
+  "actions": [
+    {
+      "id": "ws01-001",
+      "task": "Schedule pricing decision session with Scott \u2014 must be decided by end of April",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-002",
+      "task": "Schedule scope freeze meeting \u2014 agree exactly what is in and out at launch",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-003",
+      "task": "Decide Option A vs Option B for club offering at launch",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-004",
+      "task": "Lock Crystal Yeo \u2014 get contract signed this week",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-005",
+      "task": "Initiate contact with Betsy McNally Laouar \u2014 US coach, addresses top strategic risk",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-006",
+      "task": "Progress Rebecca Smith \u2014 US credibility + sports psych content",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws01-007",
+      "task": "Review pessimistic scenario assumptions once Crystal Yeo is on board",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Consider 3-tier pricing model at launch for marketing psychology",
+    "US market voice is the #2 strategic risk after content quality"
+  ],
+  "activityLog": []
+}

@@ -1,0 +1,122 @@
+{
+  "id": "ws14-technical",
+  "name": "Technical Infrastructure",
+  "icon": "🔧",
+  "description": "Non-website technical infrastructure including ActiveCampaign, analytics, affiliate tracking, integrations, security, and compliance.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws14-001",
+      "task": "Review full WS14 infrastructure status doc — confirm what is in place, identify gaps",
+      "owner": "Scott",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-002",
+      "task": "Investigate Everfit enterprise affiliate/referral tracking",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-003",
+      "task": "Confirm ActiveCampaign plan is sufficient for 7,000+ subscribers at launch",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-004",
+      "task": "Confirm Meta ads to ActiveCampaign integration is working; double opt-in configured",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-005",
+      "task": "Confirm ActiveCampaign to Everfit integration — does one exist or needs building?",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-006",
+      "task": "Decide affiliate tracking approach — native Everfit, third-party (Rewardful/Tapfiliate), or custom",
+      "owner": "Scott",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-007",
+      "task": "Map member referral program — research tools (ReferralHero, Viral Loops, or Everfit native)",
+      "owner": "Scott",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-008",
+      "task": "Install/confirm Google Analytics 4 on website",
+      "owner": "Scott",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-009",
+      "task": "Confirm data storage location and deletion capability — required for GDPR/UK GDPR/CCPA compliance",
+      "owner": "Scott",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-010",
+      "task": "Confirm 2FA is active on ALL critical platforms",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-011",
+      "task": "End-to-end subscriber journey test — complete full flow before launch",
+      "owner": "Scott",
+      "deadline": "2026-06-20",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws14-012",
+      "task": "Confirm website backup process is in place",
+      "owner": "Scott",
+      "deadline": "2026-05-15",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Affiliate tracking not solved = cannot launch affiliate program; must be resolved before club outreach mid-May",
+    "End-to-end testing of full subscriber journey required before launch — individual systems may work but fail when connected"
+  ],
+  "activityLog": []
+}

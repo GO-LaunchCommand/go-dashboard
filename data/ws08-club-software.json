@@ -1,0 +1,87 @@
+{
+  "id": "ws08-club-software",
+  "name": "GO Reporting / SaaS",
+  "icon": "📊",
+  "description": "GO Reporting voice-to-report tool completion, SaaS expansion strategy, club freemium model, and coach onboarding design.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws08-001",
+      "task": "Document outcomes from development expert meeting — scope, timeline, cost, realistic complexity",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-002",
+      "task": "Decision — launch with basic reporting tool only, or hold until broader SaaS features ready",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-003",
+      "task": "Complete GO Reporting web app to commercial standard — target April 2026",
+      "owner": "Scott",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "in-progress",
+      "updates": []
+    },
+    {
+      "id": "ws08-004",
+      "task": "Scott capacity planning — map GO Reporting completion against Everfit enterprise build timeline",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-005",
+      "task": "Confirm Crystal Yeo scope — does her role include input on GO Reporting product design?",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-006",
+      "task": "Draft club affiliate agreement terms for freemium access to GO Reporting (add to Sprintlaw brief)",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-007",
+      "task": "Design coach onboarding flow for GO Reporting",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws08-008",
+      "task": "Define SaaS expansion roadmap (Phase 2 and Phase 3) — post development expert meeting",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "GO Reporting + SaaS expansion elevates GO from 'a parent app' to 'the operating system for gymnastics clubs and families'",
+    "Start with freemium (Option A) to rapidly acquire affiliates, transition to paid as platform expands",
+    "Full SaaS scope is a 3-12 month build — today's expert meeting determines the entire club launch strategy"
+  ],
+  "activityLog": []
+}

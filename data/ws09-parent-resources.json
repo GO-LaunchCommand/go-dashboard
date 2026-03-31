@@ -1,0 +1,96 @@
+{
+  "id": "ws09-parent-resources",
+  "name": "Parent Resources",
+  "icon": "📚",
+  "description": "Parent education content library including expert interviews, flipbooks, webinars, and US-relevant content — flagged as behind schedule.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws09-001",
+      "task": "Quality review — watch ALL existing video content and make keep/reshoot/discard decision",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-002",
+      "task": "Confirm flipbook titles and content — document all 4, confirm upload-ready",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-003",
+      "task": "Schedule nutritionist reshoot if quality not acceptable — coordinate with Zoe Power and Ashleigh Mitchell",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-004",
+      "task": "Progress Rebecca Smith — confirm interest in contributing content; US angle strategically critical",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-005",
+      "task": "Plan 2-3 additional pre-launch content pieces — at minimum one Kym-fronted explainer",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-006",
+      "task": "Identify US expert for US-relevant content (Betsy McNally Laouar or equivalent)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-007",
+      "task": "Decide webinar platform — Zoom vs Crowdcast vs Everfit-integrated option",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "green",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-008",
+      "task": "Build content calendar — map what goes live at launch vs rolling post-launch",
+      "owner": "Kym",
+      "deadline": "2026-05-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws09-009",
+      "task": "Confirm Emma Nedov evolving role — on-camera interviewer (not just interviewee)",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Content volume at launch is thin — this is behind schedule",
+    "No US content = credibility gap with US-skewing audience",
+    "All existing video must be reviewed against minimum quality standards before loading"
+  ],
+  "activityLog": []
+}

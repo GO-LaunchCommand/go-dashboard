@@ -1,0 +1,104 @@
+{
+  "id": "ws05-website",
+  "name": "Website",
+  "icon": "🌐",
+  "description": "Two-phase website strategy — Phase 1 waitlist site by end of April, Phase 2 full launch site by late June with pricing and Georgia Godwin.",
+  "trafficLight": "red",
+  "actions": [
+    {
+      "id": "ws05-001",
+      "task": "Engage WordPress designer THIS WEEK — or decide Squarespace/Webflow as Phase 1 interim",
+      "owner": "Kym",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-002",
+      "task": "Decision: WordPress vs Squarespace/Webflow for Phase 1 — decide today",
+      "owner": "Kym",
+      "deadline": "2026-04-01",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-003",
+      "task": "Confirm domain and hosting setup with Scott",
+      "owner": "Scott",
+      "deadline": "2026-04-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-004",
+      "task": "Compress and prepare 2-3 AIS shoot images for web use",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-005",
+      "task": "Prepare Phase 1 copy: brand tagline, \"what GO is\" short description",
+      "owner": "Kym",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-006",
+      "task": "Confirm ActiveCampaign integration approach with designer",
+      "owner": "Scott",
+      "deadline": "2026-04-15",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-007",
+      "task": "Prepare GO logo files (PNG and SVG) for designer",
+      "owner": "Kym",
+      "deadline": "2026-04-10",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-008",
+      "task": "Phase 1 site live by end of April 2026",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-009",
+      "task": "Phase 2 brief to designer — once pricing and product scope confirmed",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws05-010",
+      "task": "Phase 2 live by late June 2026",
+      "owner": "Kym",
+      "deadline": "2026-06-25",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    "Don't wait for the perfect designer — a solid Phase 1 on Squarespace in 2 weeks beats a perfect WordPress site in 8 weeks",
+    "Phase 1 must NOT show pricing or detailed product features — keep it vague but professional"
+  ],
+  "activityLog": []
+}

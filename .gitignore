@@ -1,0 +1,13 @@
+# Server-side files (hosted on WP, not GitHub Pages)
+api.php
+config.php
+send-email.php
+locks.json
+
+# Local dev only
+serve.py
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
