@@ -1707,22 +1707,14 @@ function startVoiceNote() {
         function startRecognition() {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-AU';
-            recognition.interimResults = true;
-            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.continuous = false;
             window._voiceRecognition = recognition;
-            let sessionFinalCount = 0;
 
             recognition.onresult = (event) => {
-                let interim = '';
-                for (let i = sessionFinalCount; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        window._voiceAccumulated += event.results[i][0].transcript + ' ';
-                        sessionFinalCount++;
-                    } else {
-                        interim += event.results[i][0].transcript;
-                    }
-                }
-                textarea.value = (window._voiceAccumulated + interim).trim();
+                const sentence = event.results[event.results.length - 1][0].transcript;
+                window._voiceAccumulated += sentence + ' ';
+                textarea.value = window._voiceAccumulated.trim();
             };
 
             recognition.onend = () => {
