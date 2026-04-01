@@ -1701,34 +1701,59 @@ function startVoiceNote() {
 
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'en-AU';
-        recognition.interimResults = true;
-        recognition.continuous = true;
+        window._voiceActive = true;
+        window._voiceAccumulated = '';
 
-        window._voiceRecognition = recognition;
+        function startRecognition() {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-AU';
+            recognition.interimResults = true;
+            recognition.continuous = true;
+            window._voiceRecognition = recognition;
 
-        recognition.onresult = (event) => {
-            let transcript = '';
-            for (let i = 0; i < event.results.length; i++) {
-                transcript += event.results[i][0].transcript;
-            }
-            textarea.value = transcript;
-        };
+            recognition.onresult = (event) => {
+                let interim = '';
+                let final = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        final += event.results[i][0].transcript;
+                    } else {
+                        interim += event.results[i][0].transcript;
+                    }
+                }
+                if (final) window._voiceAccumulated += final;
+                textarea.value = (window._voiceAccumulated + interim).trim();
+            };
 
-        recognition.onend = () => {
-            indicator.style.display = 'none';
-            title.textContent = '📝 Your note';
-            window._voiceRecognition = null;
-        };
+            recognition.onend = () => {
+                // Android Chrome stops after each pause — restart automatically
+                if (window._voiceActive) {
+                    try { startRecognition(); } catch(e) {
+                        indicator.style.display = 'none';
+                        title.textContent = '📝 Your note (tap to edit)';
+                        window._voiceActive = false;
+                    }
+                } else {
+                    indicator.style.display = 'none';
+                    title.textContent = '📝 Your note';
+                    window._voiceRecognition = null;
+                }
+            };
 
-        recognition.onerror = (event) => {
-            indicator.style.display = 'none';
-            title.textContent = event.error === 'not-allowed' ? '⚠️ Microphone access denied' : '📝 Type your note';
-            window._voiceRecognition = null;
-        };
+            recognition.onerror = (event) => {
+                if (event.error === 'not-allowed') {
+                    indicator.style.display = 'none';
+                    title.textContent = '⚠️ Microphone access denied';
+                    window._voiceActive = false;
+                    window._voiceRecognition = null;
+                }
+                // other errors (no-speech, aborted) — let onend handle restart
+            };
 
-        recognition.start();
+            recognition.start();
+        }
+
+        startRecognition();
     } else {
         indicator.style.display = 'none';
         title.textContent = '📝 Type your note';
@@ -1736,7 +1761,8 @@ function startVoiceNote() {
 }
 
 function cancelVoiceNote() {
-    if (window._voiceRecognition) window._voiceRecognition.stop();
+    window._voiceActive = false;
+    if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
     document.getElementById('voice-modal').style.display = 'none';
 }
 
