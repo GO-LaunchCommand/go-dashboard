@@ -1707,24 +1707,36 @@ function startVoiceNote() {
         function startRecognition() {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-AU';
-            recognition.interimResults = false;
+            recognition.interimResults = true;
             recognition.continuous = false;
             window._voiceRecognition = recognition;
+            let sessionBest = '';
 
             recognition.onresult = (event) => {
-                const sentence = event.results[event.results.length - 1][0].transcript;
-                window._voiceAccumulated += sentence + ' ';
-                textarea.value = window._voiceAccumulated.trim();
+                // Take the best (last) result — Android sends cumulative transcripts
+                // so we REPLACE the session preview, never append here
+                sessionBest = event.results[event.results.length - 1][0].transcript;
+                textarea.value = (window._voiceAccumulated + sessionBest).trim();
             };
 
             recognition.onend = () => {
-                // Android Chrome stops after each pause — restart automatically
+                // Commit this session's best transcript to accumulated
+                if (sessionBest) {
+                    window._voiceAccumulated += sessionBest + ' ';
+                    textarea.value = window._voiceAccumulated.trim();
+                    sessionBest = '';
+                }
                 if (window._voiceActive) {
-                    try { startRecognition(); } catch(e) {
-                        indicator.style.display = 'none';
-                        title.textContent = '📝 Your note (tap to edit)';
-                        window._voiceActive = false;
-                    }
+                    // Small delay before restarting to avoid catching residual audio
+                    setTimeout(() => {
+                        if (window._voiceActive) {
+                            try { startRecognition(); } catch(e) {
+                                indicator.style.display = 'none';
+                                title.textContent = '📝 Your note';
+                                window._voiceActive = false;
+                            }
+                        }
+                    }, 300);
                 } else {
                     indicator.style.display = 'none';
                     title.textContent = '📝 Your note';
