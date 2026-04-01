@@ -23,6 +23,7 @@ let currentUser = null;
 let areas = [];
 let locks = {};
 let currentAreaId = null;
+let searchQuery = '';
 let expandedActionId = null;
 let refreshTimer = null;
 let relatedTasks = [];
@@ -532,6 +533,106 @@ function filterCards(filter, btn) {
         if (filter === 'all') card.classList.remove('filtered-out');
         else card.classList.toggle('filtered-out', card.getAttribute('data-traffic') !== filter);
     });
+}
+
+// ---- SEARCH ----
+function runSearch(query) {
+    searchQuery = query;
+    const grid = document.getElementById('cards-grid');
+    const filterBar = document.querySelector('.filter-bar');
+    const clearBtn = document.getElementById('search-clear');
+
+    if (clearBtn) clearBtn.style.display = query ? 'flex' : 'none';
+
+    if (!query.trim()) {
+        filterBar.style.display = '';
+        renderCards();
+        return;
+    }
+
+    filterBar.style.display = 'none';
+    const q = query.toLowerCase();
+    const results = [];
+    const now = new Date();
+
+    areas.forEach(area => {
+        area.actions.forEach(action => {
+            if (action.task.toLowerCase().includes(q) ||
+                (action.owner && action.owner.toLowerCase().includes(q))) {
+                results.push({ type: 'action', area, action });
+            }
+        });
+        (area.ideas || []).forEach(idea => {
+            if (idea.text && idea.text.toLowerCase().includes(q)) {
+                results.push({ type: 'idea', area, idea });
+            }
+        });
+    });
+
+    if (results.length === 0) {
+        grid.innerHTML = `<div class="search-no-results">No results for "<strong>${query}</strong>"</div>`;
+        return;
+    }
+
+    grid.innerHTML = results.map(r => {
+        if (r.type === 'action') {
+            const a = r.action;
+            const isOverdue = a.status !== 'complete' && a.deadline && new Date(a.deadline) < now;
+            return `<div class="area-card search-result-card ${a.status === 'complete' ? 'complete' : ''} ${isOverdue ? 'overdue-card' : ''}"
+                        onclick="openDetail('${r.area.id}')">
+                <div class="card-top">
+                    <span class="card-icon">${r.area.icon || '📋'}</span>
+                    <span class="traffic-light ${a.priority || 'amber'}"></span>
+                    <span class="status-badge ${a.status}">${formatStatus(a.status)}</span>
+                </div>
+                <div class="card-name" style="font-size:14px">${highlightMatch(a.task, query)}</div>
+                <div class="card-description">${r.area.name} · ${a.owner || ''}${a.deadline ? ' · 📅 ' + formatDate(a.deadline) : ''}</div>
+            </div>`;
+        } else {
+            return `<div class="area-card search-result-card" onclick="openDetail('${r.area.id}')">
+                <div class="card-top"><span class="card-icon">💡</span></div>
+                <div class="card-name" style="font-size:14px">${highlightMatch(r.idea.text, query)}</div>
+                <div class="card-description">${r.area.name}</div>
+            </div>`;
+        }
+    }).join('');
+}
+
+function clearSearch() {
+    searchQuery = '';
+    const input = document.getElementById('dashboard-search-input');
+    if (input) input.value = '';
+    const clearBtn = document.getElementById('search-clear');
+    if (clearBtn) clearBtn.style.display = 'none';
+    document.querySelector('.filter-bar').style.display = '';
+    renderCards();
+}
+
+function voiceSearch() {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        alert('Voice search not supported. Try Chrome.');
+        return;
+    }
+    const btn = document.getElementById('search-mic-btn');
+    const input = document.getElementById('dashboard-search-input');
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-AU';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+
+    btn.classList.add('recording');
+    recognition.onresult = (event) => {
+        const spoken = event.results[0][0].transcript;
+        // Strip leading search phrases if spoken
+        const query = spoken.replace(/^(search|find|look for|show me)\s+(tasks?\s+)?(with|for|about|containing)?\s*/i, '').trim();
+        input.value = query;
+        runSearch(query);
+        btn.classList.remove('recording');
+    };
+    recognition.onerror = () => btn.classList.remove('recording');
+    recognition.onend = () => btn.classList.remove('recording');
+    recognition.start();
 }
 
 // ---- NOTIFICATIONS ----

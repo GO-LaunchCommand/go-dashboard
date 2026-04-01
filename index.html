@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=28">
+    <link rel="stylesheet" href="style.css?v=29">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -53,7 +53,7 @@
                 <h1 class="top-bar-title">Launch Command Centre</h1>
             </div>
             <div class="top-bar-right">
-                <button class="voice-command-btn" id="voice-command-btn" onclick="startVoiceCommand()" title="Voice command — say 'add note to marketing...'">🎙️</button>
+                <button class="voice-command-btn" id="voice-command-btn" onclick="startVoiceNote()" title="Add a voice note">🎙️</button>
                 <div class="sync-status" id="sync-status" title="Last synced">
                     <span class="sync-dot"></span>
                     <span id="sync-time">Synced just now</span>
@@ -134,6 +134,17 @@
                     <!-- Populated by JS -->
                 </div>
             </div>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar-row">
+            <div class="search-input-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="dashboard-search-input" class="search-input" placeholder="Search tasks, ideas, owners..."
+                    oninput="runSearch(this.value)">
+                <button id="search-clear" class="search-clear-btn" onclick="clearSearch()" style="display:none">✕</button>
+            </div>
+            <button id="search-mic-btn" class="search-mic-btn" onclick="voiceSearch()" title="Voice search">🎙️</button>
         </div>
 
         <!-- FILTER BAR -->
@@ -322,6 +333,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=29"></script>
+    <script src="app.js?v=30"></script>
 </body>
 </html>
