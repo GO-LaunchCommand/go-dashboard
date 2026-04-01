@@ -1857,6 +1857,7 @@ function tapToRecord() {
     const recognition = new SpeechRecognition();
     window._voiceRunning = true;
     window._silentAudioCtx = startSilentAudio();
+    window._voiceFailCount = 0;
 
     function startSession() {
         const r = new SpeechRecognition();
@@ -1901,9 +1902,21 @@ function tapToRecord() {
             }
             window._voiceRecognition = null;
             if (window._voiceRunning) {
+                if (!sessionText) window._voiceFailCount++;
+                else window._voiceFailCount = 0;
+                // If 3 rapid empty sessions in a row, stop auto-restarting
+                if (window._voiceFailCount >= 3) {
+                    window._voiceRunning = false;
+                    stopSilentAudio(window._silentAudioCtx);
+                    btn.classList.remove('recording');
+                    icon.textContent = '🎙️';
+                    label.textContent = 'Tap to speak';
+                    title.textContent = '🎙️ Voice Note';
+                    return;
+                }
                 setTimeout(() => {
                     if (window._voiceRunning) suppressChime(() => { if (window._voiceRunning) startSession(); });
-                }, 1500);
+                }, 2500);
             } else {
                 clearTimeout(window._voiceSilenceTimer);
                 stopSilentAudio(window._silentAudioCtx);
