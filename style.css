@@ -1600,7 +1600,12 @@ html {
     max-width: 500px;
     max-height: 90vh;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
     animation: slideUp 0.25s ease;
+}
+.voice-modal-actions {
+    flex-shrink: 0;
 }
 @media (min-width: 769px) {
     .voice-modal { border-radius: var(--radius); }
@@ -1642,7 +1647,7 @@ html {
     justify-content: center;
 }
 
-.voice-modal-body { padding: 0 24px 16px; }
+.voice-modal-body { padding: 0 24px 16px; overflow-y: auto; flex: 1; }
 
 .voice-recording-indicator {
     display: flex;
