@@ -1837,19 +1837,38 @@ function tapToRecord() {
     const recognition = new SpeechRecognition();
     recognition.lang = 'en-AU';
     recognition.interimResults = true;
-    recognition.continuous = false;
+    recognition.continuous = true;
     window._voiceRecognition = recognition;
+    window._voiceSilenceTimer = null;
+    let finalCount = 0;
 
-    btn.classList.add('recording');
-    icon.textContent = '⏹️';
-    label.textContent = 'Listening... tap to stop';
-    title.textContent = '🎙️ Recording...';
+    function setRecordingUI(active) {
+        btn.classList.toggle('recording', active);
+        icon.textContent = active ? '⏹️' : '🎙️';
+        label.textContent = active ? 'Listening... tap to stop' : 'Tap to add more';
+        title.textContent = active ? '🎙️ Recording...' : '🎙️ Voice Note';
+    }
+
+    function resetSilenceTimer() {
+        clearTimeout(window._voiceSilenceTimer);
+        window._voiceSilenceTimer = setTimeout(() => {
+            // 10 seconds of silence — stop cleanly
+            if (window._voiceRecognition) {
+                window._voiceRecognition.stop();
+            }
+        }, 10000);
+    }
+
+    setRecordingUI(true);
+    resetSilenceTimer();
 
     recognition.onresult = (event) => {
+        resetSilenceTimer();
         let interim = '';
-        for (let i = 0; i < event.results.length; i++) {
+        for (let i = finalCount; i < event.results.length; i++) {
             if (event.results[i].isFinal) {
                 window._voiceAccumulated += event.results[i][0].transcript + ' ';
+                finalCount++;
             } else {
                 interim += event.results[i][0].transcript;
             }
@@ -1858,26 +1877,24 @@ function tapToRecord() {
     };
 
     recognition.onend = () => {
+        clearTimeout(window._voiceSilenceTimer);
         window._voiceRecognition = null;
         textarea.value = window._voiceAccumulated.trim();
-        btn.classList.remove('recording');
-        icon.textContent = '🎙️';
-        label.textContent = 'Tap to add more';
-        title.textContent = '🎙️ Voice Note';
+        setRecordingUI(false);
     };
 
     recognition.onerror = (event) => {
+        clearTimeout(window._voiceSilenceTimer);
         window._voiceRecognition = null;
-        btn.classList.remove('recording');
-        icon.textContent = '🎙️';
-        label.textContent = event.error === 'not-allowed' ? '⚠️ Mic denied' : 'Tap to speak';
-        title.textContent = '🎙️ Voice Note';
+        setRecordingUI(false);
+        if (event.error === 'not-allowed') label.textContent = '⚠️ Mic denied';
     };
 
     suppressChime(() => recognition.start());
 }
 
 function cancelVoiceNote() {
+    clearTimeout(window._voiceSilenceTimer);
     if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
     window._voiceAccumulated = '';
     document.getElementById('voice-modal').style.display = 'none';
