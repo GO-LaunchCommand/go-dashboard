@@ -1841,12 +1841,13 @@ function tapToRecord() {
     function startSession() {
         const r = new SpeechRecognition();
         r.lang = 'en-AU';
-        r.interimResults = false;
+        r.interimResults = true;
         r.continuous = false;
         window._voiceRecognition = r;
+        let sessionText = '';
 
         r.onstart = () => {
-            // Start silence timer as soon as session opens
+            sessionText = '';
             clearTimeout(window._voiceSilenceTimer);
             window._voiceSilenceTimer = setTimeout(() => {
                 window._voiceRunning = false;
@@ -1855,11 +1856,15 @@ function tapToRecord() {
         };
 
         r.onresult = (event) => {
-            const text = event.results[0][0].transcript;
-            window._voiceAccumulated += text + ' ';
-            textarea.value = window._voiceAccumulated.trim();
+            // Rebuild this session's text from scratch — no cross-session bleed
+            let text = '';
+            for (let i = 0; i < event.results.length; i++) {
+                text += event.results[i][0].transcript;
+            }
+            sessionText = text;
+            textarea.value = (window._voiceAccumulated + sessionText).trim();
             document.getElementById('voice-clear-btn').style.display = 'block';
-            // Reset silence timer after each result
+            // Reset silence timer on speech
             clearTimeout(window._voiceSilenceTimer);
             window._voiceSilenceTimer = setTimeout(() => {
                 window._voiceRunning = false;
@@ -1868,9 +1873,14 @@ function tapToRecord() {
         };
 
         r.onend = () => {
+            // Commit this session's final text before restarting
+            if (sessionText) {
+                window._voiceAccumulated += sessionText + ' ';
+                textarea.value = window._voiceAccumulated.trim();
+                sessionText = '';
+            }
             window._voiceRecognition = null;
             if (window._voiceRunning) {
-                // Delay restart — prevents chime cascade on fast no-speech cycles
                 setTimeout(() => {
                     if (window._voiceRunning) suppressChime(() => { if (window._voiceRunning) startSession(); });
                 }, 1500);
