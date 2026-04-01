@@ -1715,6 +1715,26 @@ html {
 }
 .voice-close-btn:hover { background: var(--bg-card-hover); }
 
+.voice-tap-mic-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    background: var(--bg-input);
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+.voice-tap-mic-btn:hover { border-color: var(--accent); color: var(--accent); }
+.voice-tap-mic-btn.recording { border-color: var(--pink); background: var(--red-bg); color: var(--pink); animation: pulse 1s infinite; }
+#voice-tap-mic-icon { font-size: 28px; }
+
 .voice-cancel-btn {
     width: 100%;
     margin-top: 10px;

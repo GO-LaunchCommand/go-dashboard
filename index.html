@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=29">
+    <link rel="stylesheet" href="style.css?v=30">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -312,11 +312,11 @@
                 <button class="voice-close-btn" onclick="cancelVoiceNote()">✕</button>
             </div>
             <div class="voice-modal-body">
-                <div class="voice-recording-indicator" id="voice-recording-indicator">
-                    <div class="voice-pulse"></div>
-                    <span>Listening... speak now</span>
-                </div>
-                <textarea id="voice-note-text" class="voice-note-textarea" rows="4" placeholder="Your note will appear here... (or type manually)"></textarea>
+                <textarea id="voice-note-text" class="voice-note-textarea" rows="4" placeholder="Tap the mic to speak, or type here..."></textarea>
+                <button class="voice-tap-mic-btn" id="voice-tap-mic-btn" onclick="tapToRecord()">
+                    <span id="voice-tap-mic-icon">🎙️</span>
+                    <span id="voice-tap-mic-label">Tap to speak</span>
+                </button>
             </div>
             <div class="voice-modal-actions">
                 <div class="voice-modal-label">Where should this go?</div>
@@ -333,6 +333,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=32"></script>
+    <script src="app.js?v=33"></script>
 </body>
 </html>
