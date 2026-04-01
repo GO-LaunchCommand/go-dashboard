@@ -1808,21 +1808,17 @@ function startVoiceNote() {
         function startRecognition() {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-AU';
-            recognition.interimResults = true;
-            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.continuous = false;
             window._voiceRecognition = recognition;
+            let gotResult = false;
 
             recognition.onresult = (event) => {
-                // event.resultIndex = the result that just changed — process only from there
-                for (let i = event.resultIndex; i < event.results.length; i++) {
-                    if (event.results[i].isFinal) {
-                        window._voiceAccumulated += event.results[i][0].transcript + ' ';
-                    }
-                }
-                // Show live interim for the latest result only
-                const last = event.results[event.results.length - 1];
-                const interim = last.isFinal ? '' : last[0].transcript;
-                textarea.value = (window._voiceAccumulated + interim).trim();
+                gotResult = true;
+                // Single final result — just append it, no looping
+                const text = event.results[0][0].transcript;
+                window._voiceAccumulated += text + ' ';
+                textarea.value = window._voiceAccumulated.trim();
             };
 
             recognition.onend = () => {
