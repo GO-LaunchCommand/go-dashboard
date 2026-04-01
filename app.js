@@ -1710,18 +1710,18 @@ function startVoiceNote() {
             recognition.interimResults = true;
             recognition.continuous = true;
             window._voiceRecognition = recognition;
+            let sessionFinalCount = 0;
 
             recognition.onresult = (event) => {
                 let interim = '';
-                let final = '';
-                for (let i = 0; i < event.results.length; i++) {
+                for (let i = sessionFinalCount; i < event.results.length; i++) {
                     if (event.results[i].isFinal) {
-                        final += event.results[i][0].transcript;
+                        window._voiceAccumulated += event.results[i][0].transcript + ' ';
+                        sessionFinalCount++;
                     } else {
                         interim += event.results[i][0].transcript;
                     }
                 }
-                if (final) window._voiceAccumulated += final;
                 textarea.value = (window._voiceAccumulated + interim).trim();
             };
 
