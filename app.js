@@ -1708,26 +1708,29 @@ function startVoiceNote() {
             const recognition = new SpeechRecognition();
             recognition.lang = 'en-AU';
             recognition.interimResults = true;
-            recognition.continuous = false;
+            recognition.continuous = true;
             window._voiceRecognition = recognition;
             let sessionBest = '';
 
             recognition.onresult = (event) => {
-                // Take the best (last) result — Android sends cumulative transcripts
-                // so we REPLACE the session preview, never append here
-                sessionBest = event.results[event.results.length - 1][0].transcript;
+                // Rebuild full transcript from all results in this session
+                let full = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    full += event.results[i][0].transcript;
+                }
+                sessionBest = full;
                 textarea.value = (window._voiceAccumulated + sessionBest).trim();
             };
 
             recognition.onend = () => {
-                // Commit this session's best transcript to accumulated
+                // Commit this session's transcript to accumulated
                 if (sessionBest) {
                     window._voiceAccumulated += sessionBest + ' ';
                     textarea.value = window._voiceAccumulated.trim();
                     sessionBest = '';
                 }
                 if (window._voiceActive) {
-                    // Small delay before restarting to avoid catching residual audio
+                    // Restart only when Android times out (less frequent = fewer chimes)
                     setTimeout(() => {
                         if (window._voiceActive) {
                             try { startRecognition(); } catch(e) {
