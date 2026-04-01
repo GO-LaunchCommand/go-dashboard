@@ -1710,25 +1710,33 @@ function startVoiceNote() {
             recognition.interimResults = true;
             recognition.continuous = true;
             window._voiceRecognition = recognition;
-            let sessionBest = '';
+            let sessionFinals = '';
+            let sessionFinalCount = 0;
 
             recognition.onresult = (event) => {
-                // Rebuild full transcript from all results in this session
-                let full = '';
-                for (let i = 0; i < event.results.length; i++) {
-                    full += event.results[i][0].transcript;
+                // Add any new final results (avoid double-counting)
+                for (let i = sessionFinalCount; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        sessionFinals += event.results[i][0].transcript;
+                        sessionFinalCount++;
+                    }
                 }
-                sessionBest = full;
-                textarea.value = (window._voiceAccumulated + sessionBest).trim();
+                // Show current interim (words still being processed)
+                let interim = '';
+                for (let i = sessionFinalCount; i < event.results.length; i++) {
+                    if (!event.results[i].isFinal) interim += event.results[i][0].transcript;
+                }
+                textarea.value = (window._voiceAccumulated + sessionFinals + interim).trim();
             };
 
             recognition.onend = () => {
-                // Commit this session's transcript to accumulated
-                if (sessionBest) {
-                    window._voiceAccumulated += sessionBest + ' ';
+                // Commit finals from this session
+                if (sessionFinals) {
+                    window._voiceAccumulated += sessionFinals + ' ';
                     textarea.value = window._voiceAccumulated.trim();
-                    sessionBest = '';
                 }
+                sessionFinals = '';
+                sessionFinalCount = 0;
                 if (window._voiceActive) {
                     // Restart only when Android times out (less frequent = fewer chimes)
                     setTimeout(() => {
