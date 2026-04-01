@@ -1870,8 +1870,10 @@ function tapToRecord() {
         r.onend = () => {
             window._voiceRecognition = null;
             if (window._voiceRunning) {
-                // Auto-restart silently — suppress chime each time
-                suppressChime(() => { if (window._voiceRunning) startSession(); });
+                // Delay restart — prevents chime cascade on fast no-speech cycles
+                setTimeout(() => {
+                    if (window._voiceRunning) suppressChime(() => { if (window._voiceRunning) startSession(); });
+                }, 1500);
             } else {
                 clearTimeout(window._voiceSilenceTimer);
                 btn.classList.remove('recording');
