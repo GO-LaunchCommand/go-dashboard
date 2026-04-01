@@ -1845,12 +1845,21 @@ function tapToRecord() {
         r.continuous = false;
         window._voiceRecognition = r;
 
+        r.onstart = () => {
+            // Start silence timer as soon as session opens
+            clearTimeout(window._voiceSilenceTimer);
+            window._voiceSilenceTimer = setTimeout(() => {
+                window._voiceRunning = false;
+                if (window._voiceRecognition) window._voiceRecognition.stop();
+            }, 10000);
+        };
+
         r.onresult = (event) => {
             const text = event.results[0][0].transcript;
             window._voiceAccumulated += text + ' ';
             textarea.value = window._voiceAccumulated.trim();
             document.getElementById('voice-clear-btn').style.display = 'block';
-            // Reset silence timer on every result
+            // Reset silence timer after each result
             clearTimeout(window._voiceSilenceTimer);
             window._voiceSilenceTimer = setTimeout(() => {
                 window._voiceRunning = false;
