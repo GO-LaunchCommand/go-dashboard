@@ -1820,9 +1820,10 @@ function suppressChime(callback) {
 }
 
 function tapToRecord() {
-    if (window._voiceRecognition) {
+    if (window._voiceRunning) {
         // Already recording — stop it
-        window._voiceRecognition.stop();
+        window._voiceRunning = false;
+        if (window._voiceRecognition) window._voiceRecognition.stop();
         return;
     }
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) return;
@@ -1835,45 +1836,59 @@ function tapToRecord() {
 
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.lang = 'en-AU';
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    window._voiceRecognition = recognition;
+    window._voiceRunning = true;
+
+    function startSession() {
+        const r = new SpeechRecognition();
+        r.lang = 'en-AU';
+        r.interimResults = false;
+        r.continuous = false;
+        window._voiceRecognition = r;
+
+        r.onresult = (event) => {
+            const text = event.results[0][0].transcript;
+            window._voiceAccumulated += text + ' ';
+            textarea.value = window._voiceAccumulated.trim();
+        };
+
+        r.onend = () => {
+            window._voiceRecognition = null;
+            if (window._voiceRunning) {
+                // Auto-restart silently — suppress chime each time
+                suppressChime(() => { if (window._voiceRunning) startSession(); });
+            } else {
+                btn.classList.remove('recording');
+                icon.textContent = '🎙️';
+                label.textContent = 'Tap to add more';
+                title.textContent = '🎙️ Voice Note';
+            }
+        };
+
+        r.onerror = (event) => {
+            window._voiceRecognition = null;
+            if (event.error === 'not-allowed') {
+                window._voiceRunning = false;
+                btn.classList.remove('recording');
+                icon.textContent = '🎙️';
+                label.textContent = '⚠️ Mic denied';
+                title.textContent = '🎙️ Voice Note';
+            }
+            // other errors — onend will fire and restart
+        };
+
+        r.start();
+    }
 
     btn.classList.add('recording');
     icon.textContent = '⏹️';
     label.textContent = 'Listening...';
     title.textContent = '🎙️ Recording...';
 
-    recognition.onresult = (event) => {
-        // One clean final result — append it, no loops, no duplicates
-        const text = event.results[0][0].transcript;
-        window._voiceAccumulated += text + ' ';
-        textarea.value = window._voiceAccumulated.trim();
-    };
-
-    recognition.onend = () => {
-        window._voiceRecognition = null;
-        textarea.value = window._voiceAccumulated.trim();
-        btn.classList.remove('recording');
-        icon.textContent = '🎙️';
-        label.textContent = 'Tap to add more';
-        title.textContent = '🎙️ Voice Note';
-    };
-
-    recognition.onerror = (event) => {
-        window._voiceRecognition = null;
-        btn.classList.remove('recording');
-        icon.textContent = '🎙️';
-        label.textContent = event.error === 'not-allowed' ? '⚠️ Mic denied' : 'Tap to speak';
-        title.textContent = '🎙️ Voice Note';
-    };
-
-    suppressChime(() => recognition.start());
+    suppressChime(() => startSession());
 }
 
 function cancelVoiceNote() {
-    clearTimeout(window._voiceSilenceTimer);
+    window._voiceRunning = false;
     if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
     window._voiceAccumulated = '';
     document.getElementById('voice-modal').style.display = 'none';
