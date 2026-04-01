@@ -1819,6 +1819,25 @@ function suppressChime(callback) {
     } catch(e) { callback(); }
 }
 
+function startSilentAudio() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return null;
+        const ctx = new AudioContext();
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
+        gain.gain.value = 0; // completely silent
+        oscillator.connect(gain);
+        gain.connect(ctx.destination);
+        oscillator.start();
+        return ctx;
+    } catch(e) { return null; }
+}
+
+function stopSilentAudio(ctx) {
+    try { if (ctx) ctx.close(); } catch(e) {}
+}
+
 function tapToRecord() {
     if (window._voiceRunning) {
         // Already recording — stop it
@@ -1837,6 +1856,7 @@ function tapToRecord() {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     window._voiceRunning = true;
+    window._silentAudioCtx = startSilentAudio();
 
     function startSession() {
         const r = new SpeechRecognition();
@@ -1886,6 +1906,8 @@ function tapToRecord() {
                 }, 1500);
             } else {
                 clearTimeout(window._voiceSilenceTimer);
+                stopSilentAudio(window._silentAudioCtx);
+                window._silentAudioCtx = null;
                 btn.classList.remove('recording');
                 icon.textContent = '🎙️';
                 label.textContent = 'Tap to add more';
@@ -1932,6 +1954,8 @@ function clearVoiceNote() {
 function cancelVoiceNote() {
     window._voiceRunning = false;
     clearTimeout(window._voiceSilenceTimer);
+    stopSilentAudio(window._silentAudioCtx);
+    window._silentAudioCtx = null;
     if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
     window._voiceAccumulated = '';
     document.getElementById('voice-modal').style.display = 'none';
