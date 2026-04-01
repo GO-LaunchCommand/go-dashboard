@@ -1849,6 +1849,12 @@ function tapToRecord() {
             const text = event.results[0][0].transcript;
             window._voiceAccumulated += text + ' ';
             textarea.value = window._voiceAccumulated.trim();
+            // Reset silence timer on every result
+            clearTimeout(window._voiceSilenceTimer);
+            window._voiceSilenceTimer = setTimeout(() => {
+                window._voiceRunning = false;
+                if (window._voiceRecognition) window._voiceRecognition.stop();
+            }, 10000);
         };
 
         r.onend = () => {
@@ -1857,6 +1863,7 @@ function tapToRecord() {
                 // Auto-restart silently — suppress chime each time
                 suppressChime(() => { if (window._voiceRunning) startSession(); });
             } else {
+                clearTimeout(window._voiceSilenceTimer);
                 btn.classList.remove('recording');
                 icon.textContent = '🎙️';
                 label.textContent = 'Tap to add more';
@@ -1889,6 +1896,7 @@ function tapToRecord() {
 
 function cancelVoiceNote() {
     window._voiceRunning = false;
+    clearTimeout(window._voiceSilenceTimer);
     if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
     window._voiceAccumulated = '';
     document.getElementById('voice-modal').style.display = 'none';
