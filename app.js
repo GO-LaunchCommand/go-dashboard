@@ -1533,8 +1533,8 @@ function processVoiceCommand(spoken) {
 
         const buttonsDiv = document.getElementById('voice-modal-buttons');
         buttonsDiv.innerHTML = `
-            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Pick a Card</button>
-            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Inbox</button>
+            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">✅ Save to a Card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Save to Inbox</button>
         `;
         document.getElementById('voice-modal').style.display = 'flex';
         return;
@@ -1688,14 +1688,14 @@ function startVoiceNote() {
         const currentArea = areas.find(a => a.id === currentAreaId);
         const areaName = currentArea ? currentArea.name : 'this card';
         buttonsDiv.innerHTML = `
-            <button class="btn btn-primary voice-action-btn" onclick="addToCurrentCard()">📌 Add to ${areaName}</button>
-            <button class="btn btn-outline voice-action-btn" onclick="showCardPicker()">📋 Different card</button>
-            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Inbox</button>
+            <button class="btn btn-primary voice-action-btn" onclick="addToCurrentCard()">✅ Save to ${areaName}</button>
+            <button class="btn btn-outline voice-action-btn" onclick="showCardPicker()">📋 Save to different card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Save to Inbox</button>
         `;
     } else {
         buttonsDiv.innerHTML = `
-            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">📋 Add to a Card</button>
-            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Add to Inbox</button>
+            <button class="btn btn-primary voice-action-btn" onclick="showCardPicker()">✅ Save to a Card</button>
+            <button class="btn btn-outline voice-action-btn" onclick="addToInbox()">📥 Save to Inbox</button>
         `;
     }
 
