@@ -1849,6 +1849,7 @@ function tapToRecord() {
             const text = event.results[0][0].transcript;
             window._voiceAccumulated += text + ' ';
             textarea.value = window._voiceAccumulated.trim();
+            document.getElementById('voice-clear-btn').style.display = 'block';
             // Reset silence timer on every result
             clearTimeout(window._voiceSilenceTimer);
             window._voiceSilenceTimer = setTimeout(() => {
@@ -1892,6 +1893,19 @@ function tapToRecord() {
     title.textContent = '🎙️ Recording...';
 
     suppressChime(() => startSession());
+}
+
+function clearVoiceNote() {
+    window._voiceRunning = false;
+    clearTimeout(window._voiceSilenceTimer);
+    if (window._voiceRecognition) { window._voiceRecognition.stop(); window._voiceRecognition = null; }
+    window._voiceAccumulated = '';
+    document.getElementById('voice-note-text').value = '';
+    document.getElementById('voice-clear-btn').style.display = 'none';
+    document.getElementById('voice-tap-mic-icon').textContent = '🎙️';
+    document.getElementById('voice-tap-mic-label').textContent = 'Tap to speak';
+    document.getElementById('voice-tap-mic-btn').classList.remove('recording');
+    document.getElementById('voice-modal-title').textContent = '🎙️ Voice Note';
 }
 
 function cancelVoiceNote() {
