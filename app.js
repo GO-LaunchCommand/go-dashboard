@@ -1805,6 +1805,20 @@ function startVoiceNote() {
     }
 }
 
+function suppressChime(callback) {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) { callback(); return; }
+        const ctx = new AudioContext();
+        const buffer = ctx.createBuffer(1, 1, 22050);
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.connect(ctx.destination);
+        source.start(0);
+        setTimeout(() => { ctx.close(); callback(); }, 50);
+    } catch(e) { callback(); }
+}
+
 function tapToRecord() {
     if (window._voiceRecognition) {
         // Already recording — stop it
@@ -1860,7 +1874,7 @@ function tapToRecord() {
         title.textContent = '🎙️ Voice Note';
     };
 
-    recognition.start();
+    suppressChime(() => recognition.start());
 }
 
 function cancelVoiceNote() {
