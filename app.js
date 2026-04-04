@@ -310,8 +310,9 @@ function renderCards() {
     grid.innerHTML = '';
 
     areas.forEach(area => {
-        const totalActions = area.actions.length;
-        const completeActions = area.actions.filter(a => a.status === 'complete').length;
+        const activeActions = area.actions.filter(a => !a.archived);
+        const totalActions = activeActions.length;
+        const completeActions = activeActions.filter(a => a.status === 'complete').length;
         const progressPct = totalActions > 0 ? Math.round((completeActions / totalActions) * 100) : 0;
         const openActions = totalActions - completeActions;
         const ideasCount = area.ideas ? area.ideas.length : 0;
@@ -833,7 +834,7 @@ function renderActions(area) {
     const table = document.getElementById('actions-table');
     let html = '';
 
-    area.actions.forEach((action, idx) => {
+    area.actions.filter(a => !a.archived).forEach((action, idx) => {
         const isOverdue = action.deadline && new Date(action.deadline) < new Date() && action.status !== 'complete';
         const isExpanded = expandedActionId === action.id;
         const dbl = dateToDaysBeforeLaunch(action.deadline);
@@ -899,9 +900,30 @@ function renderActions(area) {
                 </select>
                 <button class="btn btn-sm btn-primary" onclick="sendCalendarReminder('${action.id}')">Send Invite</button>
             </div>`;
+            html += `<div class="action-status-change" onclick="event.stopPropagation()" style="justify-content:flex-end">
+                <button class="btn btn-sm" style="background:var(--bg-input);color:var(--text-muted);border:1px solid var(--border)" onclick="event.stopPropagation(); archiveAction('${action.id}')">📦 Archive task</button>
+            </div>`;
             html += `</div>`;
         }
     });
+
+    // Archived section
+    const archived = area.actions.filter(a => a.archived);
+    if (archived.length > 0) {
+        html += `<div class="archived-section">
+            <button class="archived-toggle" onclick="this.parentElement.classList.toggle('open')">
+                📦 ${archived.length} Archived task${archived.length > 1 ? 's' : ''} <span class="archived-chevron">▸</span>
+            </button>
+            <div class="archived-list">`;
+        archived.forEach(action => {
+            html += `<div class="archived-row">
+                <span class="action-task complete">${action.task}</span>
+                <span class="action-owner" style="font-size:12px">${action.owner || ''}</span>
+                <button class="btn btn-sm" style="background:var(--bg-input);color:var(--text-muted);border:1px solid var(--border);margin-left:auto" onclick="unarchiveAction('${action.id}')">↩ Restore</button>
+            </div>`;
+        });
+        html += `</div></div>`;
+    }
 
     table.innerHTML = html || '<div style="padding: 16px; text-align: center; color: var(--text-dim);">No actions yet. Click "+ Add Action" to create one.</div>';
     initActionDrag(area);
@@ -1023,6 +1045,27 @@ function addAction() {
 
     area.actions.sort((a, b) => ({red:0,amber:1,green:2}[a.priority]||0) - ({red:0,amber:1,green:2}[b.priority]||0));
     saveArea(area); renderActions(area); renderCards(); renderSummary(); hideAddAction();
+}
+
+function archiveAction(actionId) {
+    const area = areas.find(a => a.id === currentAreaId);
+    if (!area) return;
+    const action = area.actions.find(a => a.id === actionId);
+    if (!action) return;
+    action.archived = true;
+    expandedActionId = null;
+    addActivityLog(area, `Archived action: ${action.task}`);
+    saveArea(area); renderActions(area); renderCards(); renderSummary();
+}
+
+function unarchiveAction(actionId) {
+    const area = areas.find(a => a.id === currentAreaId);
+    if (!area) return;
+    const action = area.actions.find(a => a.id === actionId);
+    if (!action) return;
+    delete action.archived;
+    addActivityLog(area, `Restored action: ${action.task}`);
+    saveArea(area); renderActions(area); renderCards(); renderSummary();
 }
 
 function deleteAction(actionId) {
