@@ -768,6 +768,7 @@ function openDetail(areaId) {
 
     renderActions(area);
     renderIdeas(area);
+    renderArchive(area);
     renderActivityLog(area);
     renderSidebar();
 
@@ -907,24 +908,6 @@ function renderActions(area) {
         }
     });
 
-    // Archived section
-    const archived = area.actions.filter(a => a.archived);
-    if (archived.length > 0) {
-        html += `<div class="archived-section">
-            <button class="archived-toggle" onclick="this.parentElement.classList.toggle('open')">
-                📦 ${archived.length} Archived task${archived.length > 1 ? 's' : ''} <span class="archived-chevron">▸</span>
-            </button>
-            <div class="archived-list">`;
-        archived.forEach(action => {
-            html += `<div class="archived-row">
-                <span class="action-task complete">${action.task}</span>
-                <span class="action-owner" style="font-size:12px">${action.owner || ''}</span>
-                <button class="btn btn-sm" style="background:var(--bg-input);color:var(--text-muted);border:1px solid var(--border);margin-left:auto" onclick="unarchiveAction('${action.id}')">↩ Restore</button>
-            </div>`;
-        });
-        html += `</div></div>`;
-    }
-
     table.innerHTML = html || '<div style="padding: 16px; text-align: center; color: var(--text-dim);">No actions yet. Click "+ Add Action" to create one.</div>';
     initActionDrag(area);
 }
@@ -1047,6 +1030,21 @@ function addAction() {
     saveArea(area); renderActions(area); renderCards(); renderSummary(); hideAddAction();
 }
 
+function renderArchive(area) {
+    const section = document.getElementById('archive-section');
+    const list = document.getElementById('archive-list');
+    if (!section || !list) return;
+    const archived = area.actions.filter(a => a.archived);
+    section.style.display = archived.length > 0 ? '' : 'none';
+    list.innerHTML = archived.map(action => `
+        <div class="archived-row">
+            <span class="action-task complete" style="flex:1">${action.task}</span>
+            <span class="action-owner" style="font-size:12px;color:var(--text-muted)">${action.owner || ''}</span>
+            <button class="btn btn-sm" style="background:var(--bg-input);color:var(--text-muted);border:1px solid var(--border);white-space:nowrap" onclick="unarchiveAction('${action.id}')">↩ Restore</button>
+            <button class="btn btn-sm" style="background:none;color:var(--text-muted);border:none" onclick="deleteAction('${action.id}')" title="Delete permanently">🗑</button>
+        </div>`).join('');
+}
+
 function archiveAction(actionId) {
     const area = areas.find(a => a.id === currentAreaId);
     if (!area) return;
@@ -1055,7 +1053,7 @@ function archiveAction(actionId) {
     action.archived = true;
     expandedActionId = null;
     addActivityLog(area, `Archived action: ${action.task}`);
-    saveArea(area); renderActions(area); renderCards(); renderSummary();
+    saveArea(area); renderActions(area); renderArchive(area); renderCards(); renderSummary();
 }
 
 function unarchiveAction(actionId) {
@@ -1065,7 +1063,7 @@ function unarchiveAction(actionId) {
     if (!action) return;
     delete action.archived;
     addActivityLog(area, `Restored action: ${action.task}`);
-    saveArea(area); renderActions(area); renderCards(); renderSummary();
+    saveArea(area); renderActions(area); renderArchive(area); renderCards(); renderSummary();
 }
 
 function deleteAction(actionId) {
