@@ -345,7 +345,7 @@ function renderCards() {
 
 // ---- RENDER SUMMARY / METRICS ----
 function renderSummary() {
-    let total = 0, complete = 0, inProgress = 0, overdue = 0, onHold = 0, cancelled = 0;
+    let total = 0, complete = 0, inProgress = 0, blocked = 0, notStarted = 0, overdue = 0, onHold = 0, cancelled = 0;
     const teamStats = {};
     TEAM_MEMBERS.forEach(m => { teamStats[m] = { total: 0, complete: 0 }; });
     const now = new Date();
@@ -355,6 +355,8 @@ function renderSummary() {
             total++;
             if (action.status === 'complete') complete++;
             if (action.status === 'in-progress') inProgress++;
+            if (action.status === 'blocked') blocked++;
+            if (action.status === 'not-started') notStarted++;
             if (action.status === 'on-hold') onHold++;
             if (action.status === 'cancelled') cancelled++;
             const activeStatus = action.status !== 'complete' && action.status !== 'cancelled' && action.status !== 'on-hold';
@@ -366,12 +368,17 @@ function renderSummary() {
         });
     });
 
+    const activeTotal = inProgress + blocked + notStarted;
     const pct = total > 0 ? Math.round((complete / total) * 100) : 0;
 
-    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-total').textContent = activeTotal;
     document.getElementById('stat-overdue').textContent = overdue;
     document.getElementById('stat-inprogress').textContent = inProgress;
     document.getElementById('stat-complete').textContent = complete;
+    const blockedEl = document.getElementById('stat-blocked');
+    if (blockedEl) blockedEl.textContent = blocked;
+    const notStartedEl = document.getElementById('stat-notstarted');
+    if (notStartedEl) notStartedEl.textContent = notStarted;
     const holdEl = document.getElementById('stat-onhold');
     if (holdEl) holdEl.textContent = onHold;
     const cancelEl = document.getElementById('stat-cancelled');
@@ -430,6 +437,7 @@ function showPersonTasks(person) {
 
     personTasksSearchQuery = '';
     window._personShowInactive = false;
+    window._personPillFilter = null;
     renderPersonPage(person, tasks);
 }
 
@@ -517,12 +525,29 @@ function renderPersonPage(person, allTasks, showOwner) {
     const countEl = document.getElementById('person-active-count');
     if (countEl) countEl.textContent = activeCount;
 
-    // Pills — active statuses only, no overdue pill (overdue shown on cards)
+    // Pill filter — clicking a pill filters the visible active tasks
+    const pillFilter = window._personPillFilter || null;
+
+    function pillClick(status) {
+        window._personPillFilter = (window._personPillFilter === status) ? null : status;
+        renderPersonPage(person, window._personAllTasks, showOwner);
+    }
+    window._pillClick = pillClick;
+
+    function pillClass(status) {
+        const base = status === 'blocked' ? 'person-stat-pill blocked-pill' : 'person-stat-pill';
+        return base + (pillFilter === status ? ' active-pill' : '');
+    }
+
+    // Pills — active statuses only; clickable to filter
     document.getElementById('person-page-stats').innerHTML = `
-        ${inProgCount > 0 ? `<span class="person-stat-pill">${inProgCount} 🟡 in progress</span>` : ''}
-        ${blockedCount > 0 ? `<span class="person-stat-pill blocked-pill">${blockedCount} 🚫 blocked</span>` : ''}
-        ${notStartedCount > 0 ? `<span class="person-stat-pill">${notStartedCount} ⬜ not started</span>` : ''}
+        ${inProgCount > 0 ? `<span class="${pillClass('in-progress')}" onclick="_pillClick('in-progress')" style="cursor:pointer">${inProgCount} 🟡 in progress</span>` : ''}
+        ${blockedCount > 0 ? `<span class="${pillClass('blocked')}" onclick="_pillClick('blocked')" style="cursor:pointer">${blockedCount} 🚫 blocked</span>` : ''}
+        ${notStartedCount > 0 ? `<span class="${pillClass('not-started')}" onclick="_pillClick('not-started')" style="cursor:pointer">${notStartedCount} ⬜ not started</span>` : ''}
     `;
+
+    // Apply pill filter to active tasks
+    const visibleActiveTasks = pillFilter ? activeTasks.filter(t => t.status === pillFilter) : activeTasks;
 
     // Render task card helper
     function taskCard(t) {
@@ -550,8 +575,8 @@ function renderPersonPage(person, allTasks, showOwner) {
 
     // Active tasks grid
     const grid = document.getElementById('person-tasks-grid');
-    grid.innerHTML = activeTasks.map(taskCard).join('') +
-        (activeTasks.length === 0 ? '<div class="person-no-results">No active tasks' + (query ? ' match your search.' : '.') + '</div>' : '');
+    grid.innerHTML = visibleActiveTasks.map(taskCard).join('') +
+        (visibleActiveTasks.length === 0 ? '<div class="person-no-results">No tasks' + (query ? ' match your search.' : ' in this filter.') + '</div>' : '');
 
     // Inactive section — collapsed toggle
     const inactiveSection = document.getElementById('person-inactive-section');
@@ -590,13 +615,14 @@ function closePersonTasks() {
 
 // ---- STATUS TASK LIST (click stat cards on home page) ----
 function showStatusTasks(statusFilter) {
+    const ACTIVE_STATUSES = ['in-progress', 'blocked', 'not-started'];
     const now = new Date();
     const tasks = [];
     areas.forEach(area => {
         area.actions.forEach(action => {
-            const isOverdue = action.status !== 'complete' && action.status !== 'cancelled' && action.status !== 'on-hold' && action.deadline && new Date(action.deadline) < now;
+            const isOverdue = ACTIVE_STATUSES.includes(action.status) && action.deadline && new Date(action.deadline) < now;
             const match =
-                statusFilter === 'all' ||
+                (statusFilter === 'all' && ACTIVE_STATUSES.includes(action.status)) ||
                 (statusFilter === 'overdue' && isOverdue) ||
                 (statusFilter === action.status);
             if (match) {
@@ -615,9 +641,15 @@ function showStatusTasks(statusFilter) {
         });
     });
 
-    const labels = { all: 'All Tasks', overdue: 'Overdue Tasks', 'in-progress': 'In Progress', complete: 'Complete', 'on-hold': 'On Hold', cancelled: 'Cancelled' };
+    const labels = {
+        all: 'All Active Tasks', overdue: 'Overdue Tasks',
+        'in-progress': 'In Progress', blocked: 'Blocked',
+        'not-started': 'Not Started', complete: 'Complete',
+        'on-hold': 'On Hold', cancelled: 'Cancelled'
+    };
     personTasksSearchQuery = '';
-    window._personShowInactive = false;
+    window._personShowInactive = statusFilter === 'complete' || statusFilter === 'on-hold' || statusFilter === 'cancelled';
+    window._personPillFilter = null;
     renderPersonPage(labels[statusFilter] || statusFilter, tasks, true);
 }
 window.showStatusTasks = showStatusTasks;

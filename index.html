@@ -10,7 +10,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="GO Launch">
     <meta name="theme-color" content="#E8317F">
-    <link rel="stylesheet" href="style.css?v=34">
+    <link rel="stylesheet" href="style.css?v=35">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -109,9 +109,9 @@
         <div class="metrics-bar">
             <div class="metrics-section">
                 <div class="metrics-group">
-                    <div class="metric-card" onclick="showStatusTasks('all')" style="cursor:pointer" title="View all tasks">
+                    <div class="metric-card" onclick="showStatusTasks('all')" style="cursor:pointer" title="View all active tasks">
                         <span class="metric-number" id="stat-total">0</span>
-                        <span class="metric-label">Total</span>
+                        <span class="metric-label">Total Active</span>
                     </div>
                     <div class="metric-card" onclick="showStatusTasks('overdue')" style="cursor:pointer" title="View overdue tasks">
                         <span class="metric-number red" id="stat-overdue">0</span>
@@ -120,6 +120,14 @@
                     <div class="metric-card" onclick="showStatusTasks('in-progress')" style="cursor:pointer" title="View in-progress tasks">
                         <span class="metric-number amber" id="stat-inprogress">0</span>
                         <span class="metric-label">In Progress</span>
+                    </div>
+                    <div class="metric-card" onclick="showStatusTasks('blocked')" style="cursor:pointer" title="View blocked tasks">
+                        <span class="metric-number" id="stat-blocked" style="color:#d97706;">0</span>
+                        <span class="metric-label">Blocked</span>
+                    </div>
+                    <div class="metric-card" onclick="showStatusTasks('not-started')" style="cursor:pointer" title="View not started tasks">
+                        <span class="metric-number" id="stat-notstarted" style="color:var(--text-muted);">0</span>
+                        <span class="metric-label">Not Started</span>
                     </div>
                     <div class="metric-card" onclick="showStatusTasks('complete')" style="cursor:pointer" title="View complete tasks">
                         <span class="metric-number green" id="stat-complete">0</span>
@@ -350,6 +358,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=48"></script>
+    <script src="app.js?v=49"></script>
 </body>
 </html>
