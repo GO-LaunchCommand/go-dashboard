@@ -1472,15 +1472,51 @@ function renderIdeas(area) {
                     </div>
                 </div>`;
         } else {
-            // Regular ideas — with delete control
+            // Regular ideas — move to card, make task, delete
             html += `
                 <div class="idea-item" data-idx="${idx}">
                     <span class="idea-bullet">💡</span>
                     <div class="idea-main" style="flex:1;">
                         <div class="idea-content">${idea.text}</div>
                         <div class="idea-meta">${idea.by || ''} &middot; ${idea.date || ''}</div>
+                        <div class="inbox-actions">
+                            <button class="inbox-btn" onclick="moveIdeaToCard('${area.id}', ${idx})" title="Move to another card as idea">📋 Move to Card</button>
+                            <button class="inbox-btn inbox-btn-promote" onclick="promoteIdeaToTask('${area.id}', ${idx})" title="Convert to task">🎯 Make Task</button>
+                            <button class="inbox-btn inbox-btn-delete" onclick="deleteIdea('${area.id}', ${idx})" title="Delete">🗑️</button>
+                        </div>
+                        <div class="inbox-move-form" id="idea-move-${area.id}-${idx}" style="display:none">
+                            <select id="idea-move-select-${area.id}-${idx}" class="form-input">
+                                ${areas.filter(a => a.id !== area.id).map(a => `<option value="${a.id}">${a.icon || '📋'} ${a.name}</option>`).join('')}
+                            </select>
+                            <div class="inbox-edit-buttons">
+                                <button class="btn btn-sm btn-primary" onclick="confirmMoveIdea('${area.id}', ${idx})">Move</button>
+                                <button class="btn btn-sm btn-outline" onclick="document.getElementById('idea-move-${area.id}-${idx}').style.display='none'">Cancel</button>
+                            </div>
+                        </div>
+                        <div class="inbox-task-form" id="idea-task-${area.id}-${idx}" style="display:none">
+                            <input type="text" id="idea-task-name-${area.id}-${idx}" value="${idea.text.replace(/"/g, '&quot;')}" class="form-input" placeholder="Task name">
+                            <div class="inbox-task-row">
+                                <select id="idea-task-area-${area.id}-${idx}" class="form-input">
+                                    ${areas.filter(a => a.id !== 'inbox').map(a => `<option value="${a.id}" ${a.id === area.id ? 'selected' : ''}>${a.icon || '📋'} ${a.name}</option>`).join('')}
+                                </select>
+                                <select id="idea-task-owner-${area.id}-${idx}" class="form-input">
+                                    ${TEAM_MEMBERS.map(m => `<option value="${m}">${m}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="inbox-task-row">
+                                <input type="date" id="idea-task-date-${area.id}-${idx}" class="form-input">
+                                <select id="idea-task-priority-${area.id}-${idx}" class="form-input">
+                                    <option value="red">🔴 High</option>
+                                    <option value="amber" selected>🟡 Medium</option>
+                                    <option value="green">🟢 Low</option>
+                                </select>
+                            </div>
+                            <div class="inbox-edit-buttons">
+                                <button class="btn btn-sm btn-primary" onclick="confirmIdeaToTask('${area.id}', ${idx})">Create Task</button>
+                                <button class="btn btn-sm btn-outline" onclick="document.getElementById('idea-task-${area.id}-${idx}').style.display='none'">Cancel</button>
+                            </div>
+                        </div>
                     </div>
-                    <button class="inbox-btn inbox-btn-delete" onclick="deleteIdea('${area.id}', ${idx})" title="Delete idea" style="flex-shrink:0;margin-left:8px;">🗑️</button>
                 </div>`;
         }
     });
@@ -1534,6 +1570,77 @@ function deleteIdea(areaId, idx) {
     showToast('🗑️ Idea deleted');
 }
 window.deleteIdea = deleteIdea;
+
+function moveIdeaToCard(areaId, idx) {
+    const formId = `idea-move-${areaId}-${idx}`;
+    const form = document.getElementById(formId);
+    if (!form) return;
+    // Close any other open forms first
+    document.querySelectorAll('.inbox-move-form, .inbox-task-form').forEach(el => { if (el.id !== formId) el.style.display = 'none'; });
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+window.moveIdeaToCard = moveIdeaToCard;
+
+function confirmMoveIdea(srcAreaId, idx) {
+    const srcArea = areas.find(a => a.id === srcAreaId);
+    if (!srcArea) return;
+    const destAreaId = document.getElementById(`idea-move-select-${srcAreaId}-${idx}`).value;
+    const destArea = areas.find(a => a.id === destAreaId);
+    if (!destArea) return;
+    const idea = srcArea.ideas[idx];
+    if (!destArea.ideas) destArea.ideas = [];
+    destArea.ideas.push({ ...idea });
+    srcArea.ideas.splice(idx, 1);
+    addActivityLog(srcArea, `Moved idea to ${destArea.name}`);
+    addActivityLog(destArea, `Received idea from ${srcArea.name}`);
+    saveArea(srcArea);
+    saveArea(destArea);
+    renderIdeas(srcArea);
+    showToast(`📋 Idea moved to ${destArea.name}`);
+}
+window.confirmMoveIdea = confirmMoveIdea;
+
+function promoteIdeaToTask(areaId, idx) {
+    const formId = `idea-task-${areaId}-${idx}`;
+    const form = document.getElementById(formId);
+    if (!form) return;
+    document.querySelectorAll('.inbox-move-form, .inbox-task-form').forEach(el => { if (el.id !== formId) el.style.display = 'none'; });
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+window.promoteIdeaToTask = promoteIdeaToTask;
+
+function confirmIdeaToTask(srcAreaId, idx) {
+    const srcArea = areas.find(a => a.id === srcAreaId);
+    if (!srcArea) return;
+    const taskName = document.getElementById(`idea-task-name-${srcAreaId}-${idx}`).value.trim();
+    if (!taskName) { showToast('⚠️ Task name is required'); return; }
+    const destAreaId = document.getElementById(`idea-task-area-${srcAreaId}-${idx}`).value;
+    const destArea = areas.find(a => a.id === destAreaId);
+    if (!destArea) return;
+    const owner = document.getElementById(`idea-task-owner-${srcAreaId}-${idx}`).value;
+    const deadline = document.getElementById(`idea-task-date-${srcAreaId}-${idx}`).value;
+    const priority = document.getElementById(`idea-task-priority-${srcAreaId}-${idx}`).value;
+    const newAction = {
+        id: 'task-' + Date.now(),
+        task: taskName,
+        owner: owner,
+        status: 'not-started',
+        priority: priority,
+        deadline: deadline || null
+    };
+    if (!destArea.actions) destArea.actions = [];
+    destArea.actions.push(newAction);
+    // Remove the idea from source
+    srcArea.ideas.splice(idx, 1);
+    addActivityLog(destArea, `Task created from idea: ${taskName}`);
+    addActivityLog(srcArea, `Idea promoted to task in ${destArea.name}`);
+    saveArea(srcArea);
+    saveArea(destArea);
+    renderIdeas(srcArea);
+    renderSummary();
+    showToast(`🎯 Task created in ${destArea.name}`);
+}
+window.confirmIdeaToTask = confirmIdeaToTask;
 
 function moveInboxToCard(idx) {
     document.getElementById('inbox-move-' + idx).style.display = 'block';
