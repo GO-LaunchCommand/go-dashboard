@@ -1,0 +1,163 @@
+{
+  "id": "ws12-marketing",
+  "name": "Marketing & Brand",
+  "icon": "📣",
+  "description": "Marketing is the primary growth engine for GO. Three-phase strategy: pre-launch lead generation via Meta ads and email nurture (underway), soft launch to email list July 1, and hard launch ~July 28 activated by Georgia Godwin as brand ambassador. All conversion happens inside Everfit. The website's job is credibility and lead capture only. Current list ~1,400 growing ~50/day. Meta CPL $0.97 — well below the $1.50 model assumption.",
+  "trafficLight": "amber",
+  "actions": [
+    {
+      "id": "ws12-001",
+      "task": "Chase Georgia Godwin contract signature — launch planning cannot be finalised without this (see WS03)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-002",
+      "task": "Decide founding member pricing — blocked on overall pricing decision (WS01/WS02)",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "blocked",
+      "updates": []
+    },
+    {
+      "id": "ws12-003",
+      "task": "Pull ActiveCampaign engagement data — open rates, click rates, unsubscribes per email. Document baseline now.",
+      "owner": "Kym",
+      "deadline": "2026-04-14",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-004",
+      "task": "Build 'I Want to Quit' Meta campaign — creative brief, ad copy, targeting. Emotionally resonant, likely broadest reach of all lead magnets.",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-005",
+      "task": "Write emails 8–11 for nurture sequence: happy ending story → product reveal → founding member offer → launch",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-006",
+      "task": "Build soft launch email sequence — 3 emails for July 1 soft launch (GO is open / reminder / last call). Draft by end of May, finalise June.",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-007",
+      "task": "Prepare Georgia activation brief — what she posts, when, copy, links. Send to her management by early June.",
+      "owner": "Kym",
+      "deadline": "2026-06-07",
+      "priority": "red",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-008",
+      "task": "Confirm Everfit enterprise supports founding member pricing — discount codes or tiered pricing",
+      "owner": "Kym",
+      "deadline": "2026-04-30",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-009",
+      "task": "Scale Meta spend — $1,500/month now → $3,000 in May → $8,000 in June. Increment carefully and monitor CPL.",
+      "owner": "Kym",
+      "deadline": "2026-05-01",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-010",
+      "task": "Set up weekly marketing dashboard — CPL, list size, daily signups, email open/click rates. Review every Monday.",
+      "owner": "Kym",
+      "deadline": "2026-04-14",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-011",
+      "task": "Systematically repurpose email content to social — every email topic is a social post or reel idea already written",
+      "owner": "Kym",
+      "deadline": "2026-05-01",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-012",
+      "task": "Begin mini-influencer identification — identify 20 target gymnastics parent creators by end of May. Use Emma Nedov and Georgia's networks.",
+      "owner": "Kym",
+      "deadline": "2026-05-31",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-013",
+      "task": "Draft press kit — GO founding story, Georgia involvement, founder bio, key images from AIS shoot. Target: June.",
+      "owner": "Kym",
+      "deadline": "2026-06-01",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    },
+    {
+      "id": "ws12-014",
+      "task": "Create pre-launch social calendar for June/July — 4 weeks of planned content (not rigid but documented). Min 4–5 posts/week on Instagram.",
+      "owner": "Kym",
+      "deadline": "2026-06-01",
+      "priority": "amber",
+      "status": "not-started",
+      "updates": []
+    }
+  ],
+  "ideas": [
+    {
+      "text": "Email 3 (Kym's founding story) is the single strongest trust asset — reference it across website, ads, and social, not just the email sequence",
+      "by": "Kym",
+      "date": "2026-04-04"
+    },
+    {
+      "text": "'I Want to Quit' guide is a better introduction to GO's philosophy than any exercise guide — emotionally sophisticated, broader audience, positions GO as support not just conditioning",
+      "by": "Kym",
+      "date": "2026-04-04"
+    },
+    {
+      "text": "Long-term: map lead magnets to the full GO content library — each free guide teases content that lives in the app, creating a clear free-to-paid path",
+      "by": "Kym",
+      "date": "2026-04-04"
+    },
+    {
+      "text": "Georgia is a credibility anchor, not a spokesperson — the positioning is 'even Georgia Godwin thinks parents need this.' That's more powerful than any ad.",
+      "by": "Kym",
+      "date": "2026-04-04"
+    },
+    {
+      "text": "UK paid campaigns bombed (CPL $2.58 vs $0.96 US). Deprioritise UK paid until US and AU traction established.",
+      "by": "Kym",
+      "date": "2026-04-04"
+    }
+  ],
+  "activityLog": []
+}

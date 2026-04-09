@@ -35,7 +35,7 @@ const AREA_FILES = [
     'ws01-business-strategy', 'ws02-finance', 'ws03-legal-compliance',
     'ws04-people', 'ws05-website', 'ws06-everfit',
     'ws07-exercise-content', 'ws08-club-software', 'ws09-parent-resources',
-    'ws10-club-sales', 'ws11-merchandise', 'ws13-member-experience',
+    'ws10-club-sales', 'ws11-merchandise', 'ws12-marketing', 'ws13-member-experience',
     'ws14-technical', 'inbox'
 ];
 
@@ -59,7 +59,7 @@ function formatDateLong(dateStr) {
 }
 
 function formatStatus(status) {
-    return { 'not-started': 'Not Started', 'in-progress': 'In Progress', 'complete': 'Complete', 'blocked': 'Blocked' }[status] || status;
+    return { 'not-started': 'Not Started', 'in-progress': 'In Progress', 'complete': 'Complete', 'blocked': 'Blocked', 'on-hold': 'On Hold', 'cancelled': 'Cancelled' }[status] || status;
 }
 
 function todayStr() { return new Date().toISOString().split('T')[0]; }
@@ -345,7 +345,7 @@ function renderCards() {
 
 // ---- RENDER SUMMARY / METRICS ----
 function renderSummary() {
-    let total = 0, complete = 0, inProgress = 0, overdue = 0;
+    let total = 0, complete = 0, inProgress = 0, overdue = 0, onHold = 0, cancelled = 0;
     const teamStats = {};
     TEAM_MEMBERS.forEach(m => { teamStats[m] = { total: 0, complete: 0 }; });
     const now = new Date();
@@ -355,7 +355,10 @@ function renderSummary() {
             total++;
             if (action.status === 'complete') complete++;
             if (action.status === 'in-progress') inProgress++;
-            if (action.status !== 'complete' && action.deadline && new Date(action.deadline) < now) overdue++;
+            if (action.status === 'on-hold') onHold++;
+            if (action.status === 'cancelled') cancelled++;
+            const activeStatus = action.status !== 'complete' && action.status !== 'cancelled' && action.status !== 'on-hold';
+            if (activeStatus && action.deadline && new Date(action.deadline) < now) overdue++;
             if (teamStats[action.owner]) {
                 teamStats[action.owner].total++;
                 if (action.status === 'complete') teamStats[action.owner].complete++;
@@ -369,6 +372,10 @@ function renderSummary() {
     document.getElementById('stat-overdue').textContent = overdue;
     document.getElementById('stat-inprogress').textContent = inProgress;
     document.getElementById('stat-complete').textContent = complete;
+    const holdEl = document.getElementById('stat-onhold');
+    if (holdEl) holdEl.textContent = onHold;
+    const cancelEl = document.getElementById('stat-cancelled');
+    if (cancelEl) cancelEl.textContent = cancelled;
 
     // Progress ring
     const circle = document.getElementById('progress-circle');
@@ -425,7 +432,7 @@ function showPersonTasks(person) {
     renderPersonPage(person, tasks);
 }
 
-function renderPersonPage(person, allTasks) {
+function renderPersonPage(person, allTasks, showOwner) {
     const query = personTasksSearchQuery.toLowerCase();
     let tasks = allTasks;
     if (query) {
@@ -496,6 +503,7 @@ function renderPersonPage(person, allTasks) {
                         <div class="person-card-task">${t.task}</div>
                         <div class="person-card-meta">
                             <span>${t.areaIcon} ${t.area}</span>
+                            ${showOwner && t.owner ? `<span style="margin-left:8px;opacity:0.6;">👤 ${t.owner}</span>` : ''}
                         </div>
                         <div class="person-card-date ${isOverdue ? 'overdue' : ''}">
                             📅 ${dateDisplay} ${dblLabel ? '<small>' + dblLabel + '</small>' : ''}
@@ -525,6 +533,39 @@ function closePersonTasks() {
     document.getElementById('dashboard').querySelector('.filter-bar').style.display = '';
     document.getElementById('dashboard').querySelector('.cards-grid').style.display = '';
 }
+
+// ---- STATUS TASK LIST (click stat cards on home page) ----
+function showStatusTasks(statusFilter) {
+    const now = new Date();
+    const tasks = [];
+    areas.forEach(area => {
+        area.actions.forEach(action => {
+            const isOverdue = action.status !== 'complete' && action.status !== 'cancelled' && action.status !== 'on-hold' && action.deadline && new Date(action.deadline) < now;
+            const match =
+                statusFilter === 'all' ||
+                (statusFilter === 'overdue' && isOverdue) ||
+                (statusFilter === action.status);
+            if (match) {
+                tasks.push({
+                    task: action.task,
+                    area: area.name,
+                    areaId: area.id,
+                    areaIcon: area.icon || '📋',
+                    deadline: action.deadline,
+                    priority: action.priority,
+                    status: action.status,
+                    owner: action.owner,
+                    id: action.id
+                });
+            }
+        });
+    });
+
+    const labels = { all: 'All Tasks', overdue: 'Overdue Tasks', 'in-progress': 'In Progress', complete: 'Complete', 'on-hold': 'On Hold', cancelled: 'Cancelled' };
+    personTasksSearchQuery = '';
+    renderPersonPage(labels[statusFilter] || statusFilter, tasks, true);
+}
+window.showStatusTasks = showStatusTasks;
 
 // ---- FILTER ----
 function filterCards(filter, btn) {
@@ -883,7 +924,9 @@ function renderActions(area) {
                     <option value="not-started" ${action.status === 'not-started' ? 'selected' : ''}>Not Started</option>
                     <option value="in-progress" ${action.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
                     <option value="blocked" ${action.status === 'blocked' ? 'selected' : ''}>Blocked</option>
+                    <option value="on-hold" ${action.status === 'on-hold' ? 'selected' : ''}>On Hold</option>
                     <option value="complete" ${action.status === 'complete' ? 'selected' : ''}>Complete</option>
+                    <option value="cancelled" ${action.status === 'cancelled' ? 'selected' : ''}>Cancelled / No Longer Needed</option>
                 </select>
                 <span style="font-size:12px; color: var(--text-dim); margin-left: 12px;">Priority:</span>
                 <select onchange="changeActionPriority('${action.id}', this.value)">
@@ -1342,8 +1385,16 @@ function renderIdeas(area) {
                     </div>
                 </div>`;
         } else {
-            // Regular ideas — simple display
-            html += `<div class="idea-item"><span class="idea-bullet">💡</span><div><div class="idea-content">${idea.text}</div><div class="idea-meta">${idea.by || ''} &middot; ${idea.date || ''}</div></div></div>`;
+            // Regular ideas — with delete control
+            html += `
+                <div class="idea-item" data-idx="${idx}">
+                    <span class="idea-bullet">💡</span>
+                    <div class="idea-main" style="flex:1;">
+                        <div class="idea-content">${idea.text}</div>
+                        <div class="idea-meta">${idea.by || ''} &middot; ${idea.date || ''}</div>
+                    </div>
+                    <button class="inbox-btn inbox-btn-delete" onclick="deleteIdea('${area.id}', ${idx})" title="Delete idea" style="flex-shrink:0;margin-left:8px;">🗑️</button>
+                </div>`;
         }
     });
 
@@ -1384,6 +1435,18 @@ function deleteInboxNote(idx) {
     renderCards();
     showToast('🗑️ Note deleted');
 }
+
+function deleteIdea(areaId, idx) {
+    const area = areas.find(a => a.id === areaId);
+    if (!area) return;
+    if (!confirm('Delete this idea/note?')) return;
+    area.ideas.splice(idx, 1);
+    addActivityLog(area, 'Deleted an idea/note');
+    saveArea(area);
+    renderIdeas(area);
+    showToast('🗑️ Idea deleted');
+}
+window.deleteIdea = deleteIdea;
 
 function moveInboxToCard(idx) {
     document.getElementById('inbox-move-' + idx).style.display = 'block';

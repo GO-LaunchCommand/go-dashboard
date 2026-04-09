@@ -109,21 +109,29 @@
         <div class="metrics-bar">
             <div class="metrics-section">
                 <div class="metrics-group">
-                    <div class="metric-card">
+                    <div class="metric-card" onclick="showStatusTasks('all')" style="cursor:pointer" title="View all tasks">
                         <span class="metric-number" id="stat-total">0</span>
                         <span class="metric-label">Total</span>
                     </div>
-                    <div class="metric-card">
+                    <div class="metric-card" onclick="showStatusTasks('overdue')" style="cursor:pointer" title="View overdue tasks">
                         <span class="metric-number red" id="stat-overdue">0</span>
                         <span class="metric-label">Overdue</span>
                     </div>
-                    <div class="metric-card">
+                    <div class="metric-card" onclick="showStatusTasks('in-progress')" style="cursor:pointer" title="View in-progress tasks">
                         <span class="metric-number amber" id="stat-inprogress">0</span>
                         <span class="metric-label">In Progress</span>
                     </div>
-                    <div class="metric-card">
+                    <div class="metric-card" onclick="showStatusTasks('complete')" style="cursor:pointer" title="View complete tasks">
                         <span class="metric-number green" id="stat-complete">0</span>
                         <span class="metric-label">Complete</span>
+                    </div>
+                    <div class="metric-card" onclick="showStatusTasks('on-hold')" style="cursor:pointer" title="View on-hold tasks">
+                        <span class="metric-number" id="stat-onhold" style="color:#8b5cf6;">0</span>
+                        <span class="metric-label">On Hold</span>
+                    </div>
+                    <div class="metric-card" onclick="showStatusTasks('cancelled')" style="cursor:pointer" title="View cancelled tasks">
+                        <span class="metric-number" id="stat-cancelled" style="color:var(--text-dim);">0</span>
+                        <span class="metric-label">Cancelled</span>
                     </div>
                 </div>
             </div>

@@ -519,6 +519,19 @@ html {
     flex-direction: column;
     align-items: center;
     min-width: 60px;
+    border-radius: 8px;
+    padding: 6px 10px;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.metric-card[onclick]:hover {
+    background: rgba(255,255,255,0.07);
+    transform: translateY(-2px);
+    cursor: pointer;
+}
+
+.metric-card[onclick]:active {
+    transform: translateY(0);
 }
 
 .metric-number {
@@ -1316,6 +1329,8 @@ html {
 .status-badge.in-progress { background: var(--amber-bg); color: var(--amber); }
 .status-badge.complete { background: var(--green-bg); color: var(--green); }
 .status-badge.blocked { background: var(--red-bg); color: var(--red); }
+.status-badge.on-hold { background: rgba(139,92,246,0.12); color: #8b5cf6; }
+.status-badge.cancelled { background: var(--bg-input); color: var(--text-dim); text-decoration: line-through; }
 
 .action-menu-btn {
     background: none;
