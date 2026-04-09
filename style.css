@@ -1914,6 +1914,32 @@ html {
     background: var(--red-bg);
     border-color: rgba(224,62,62,0.15);
 }
+.person-stat-pill.blocked-pill {
+    color: #d97706;
+    background: rgba(217,119,6,0.08);
+    border-color: rgba(217,119,6,0.2);
+}
+
+.person-inactive-toggle {
+    margin: 24px 0 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px dashed var(--border);
+    display: inline-block;
+    transition: background 0.15s;
+}
+.person-inactive-toggle:hover {
+    background: var(--bg-card);
+    color: var(--text-muted);
+}
+.person-inactive-grid {
+    opacity: 0.6;
+}
 
 .person-search-bar {
     margin-top: 16px;

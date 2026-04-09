@@ -429,39 +429,67 @@ function showPersonTasks(person) {
     });
 
     personTasksSearchQuery = '';
+    window._personShowInactive = false;
     renderPersonPage(person, tasks);
 }
 
 function renderPersonPage(person, allTasks, showOwner) {
+    const ACTIVE_STATUSES = ['in-progress', 'blocked', 'not-started'];
+    const STATUS_ORDER = { 'in-progress': 0, 'blocked': 1, 'not-started': 2 };
+    const now = new Date();
     const query = personTasksSearchQuery.toLowerCase();
-    let tasks = allTasks;
+
+    // Split into active and inactive
+    let activeTasks = allTasks.filter(t => ACTIVE_STATUSES.includes(t.status));
+    let inactiveTasks = allTasks.filter(t => !ACTIVE_STATUSES.includes(t.status));
+
+    // Apply search across both groups
     if (query) {
-        tasks = allTasks.filter(t =>
-            t.task.toLowerCase().includes(query) ||
-            t.area.toLowerCase().includes(query)
-        );
+        activeTasks = activeTasks.filter(t =>
+            t.task.toLowerCase().includes(query) || t.area.toLowerCase().includes(query));
+        inactiveTasks = inactiveTasks.filter(t =>
+            t.task.toLowerCase().includes(query) || t.area.toLowerCase().includes(query));
     }
 
-    // Sort: incomplete by date (earliest first, no-date last), then complete at bottom
-    tasks.sort((a, b) => {
-        if (a.status === 'complete' && b.status !== 'complete') return 1;
-        if (a.status !== 'complete' && b.status === 'complete') return -1;
-        // Both same completion state — sort by date
+    // Sort active: in-progress → blocked → not-started; within each, overdue first then by deadline
+    activeTasks.sort((a, b) => {
+        const aOrder = STATUS_ORDER[a.status] ?? 99;
+        const bOrder = STATUS_ORDER[b.status] ?? 99;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        const aOverdue = a.deadline && new Date(a.deadline) < now;
+        const bOverdue = b.deadline && new Date(b.deadline) < now;
+        if (aOverdue && !bOverdue) return -1;
+        if (!aOverdue && bOverdue) return 1;
         const aDate = a.deadline ? new Date(a.deadline).getTime() : Infinity;
         const bDate = b.deadline ? new Date(b.deadline).getTime() : Infinity;
         return aDate - bDate;
     });
 
-    const now = new Date();
-    const completeCount = allTasks.filter(t => t.status === 'complete').length;
+    // Sort inactive: complete first (by deadline), then on-hold, cancelled
+    inactiveTasks.sort((a, b) => {
+        const iOrder = { 'complete': 0, 'on-hold': 1, 'cancelled': 2 };
+        const aOrder = iOrder[a.status] ?? 99;
+        const bOrder = iOrder[b.status] ?? 99;
+        if (aOrder !== bOrder) return aOrder - bOrder;
+        const aDate = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+        const bDate = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+        return aDate - bDate;
+    });
+
+    // Counts for pills and footer
     const inProgCount = allTasks.filter(t => t.status === 'in-progress').length;
+    const blockedCount = allTasks.filter(t => t.status === 'blocked').length;
     const notStartedCount = allTasks.filter(t => t.status === 'not-started').length;
+    const completeCount = allTasks.filter(t => t.status === 'complete').length;
     const onHoldCount = allTasks.filter(t => t.status === 'on-hold').length;
     const cancelledCount = allTasks.filter(t => t.status === 'cancelled').length;
-    const overdueCount = allTasks.filter(t =>
-        t.status !== 'complete' && t.status !== 'on-hold' && t.status !== 'cancelled' &&
-        t.deadline && new Date(t.deadline) < now
-    ).length;
+    const activeCount = inProgCount + blockedCount + notStartedCount;
+
+    const footerParts = [];
+    if (completeCount) footerParts.push(`${completeCount} complete`);
+    if (onHoldCount) footerParts.push(`${onHoldCount} on hold`);
+    if (cancelledCount) footerParts.push(`${cancelledCount} cancelled`);
+    const inactiveTotal = completeCount + onHoldCount + cancelledCount;
 
     const page = document.getElementById('person-page');
 
@@ -471,7 +499,7 @@ function renderPersonPage(person, allTasks, showOwner) {
             <div class="person-page-header">
                 <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
                 <div class="person-page-title-row">
-                    <h1 id="person-page-title">${showOwner ? person : person + "'s Tasks"} <span class="person-page-count">${allTasks.length}</span></h1>
+                    <h1 id="person-page-title">${showOwner ? person : person + "'s Tasks"} <span class="person-page-count" id="person-active-count">${activeCount}</span></h1>
                 </div>
                 <div class="person-page-stats" id="person-page-stats"></div>
                 <div class="person-search-bar">
@@ -481,46 +509,63 @@ function renderPersonPage(person, allTasks, showOwner) {
                 </div>
             </div>
             <div class="person-tasks-grid" id="person-tasks-grid"></div>
+            <div id="person-inactive-section"></div>
         `;
     }
 
-    // Update stats — all statuses shown so counts always add up to total
+    // Update active count in title
+    const countEl = document.getElementById('person-active-count');
+    if (countEl) countEl.textContent = activeCount;
+
+    // Pills — active statuses only, no overdue pill (overdue shown on cards)
     document.getElementById('person-page-stats').innerHTML = `
-        <span class="person-stat-pill">${completeCount} ✅ complete</span>
-        <span class="person-stat-pill">${inProgCount} 🟡 in progress</span>
-        <span class="person-stat-pill">${notStartedCount} ⬜ not started</span>
-        ${overdueCount > 0 ? `<span class="person-stat-pill overdue">${overdueCount} 🔴 overdue</span>` : ''}
-        ${onHoldCount > 0 ? `<span class="person-stat-pill">${onHoldCount} ⏸️ on hold</span>` : ''}
-        ${cancelledCount > 0 ? `<span class="person-stat-pill">${cancelledCount} ❌ cancelled</span>` : ''}
+        ${inProgCount > 0 ? `<span class="person-stat-pill">${inProgCount} 🟡 in progress</span>` : ''}
+        ${blockedCount > 0 ? `<span class="person-stat-pill blocked-pill">${blockedCount} 🚫 blocked</span>` : ''}
+        ${notStartedCount > 0 ? `<span class="person-stat-pill">${notStartedCount} ⬜ not started</span>` : ''}
     `;
 
-    // Update grid only
+    // Render task card helper
+    function taskCard(t) {
+        const isOverdue = t.deadline && new Date(t.deadline) < now;
+        const dbl = dateToDaysBeforeLaunch(t.deadline);
+        const dblLabel = dbl > 0 ? dbl + 'd before launch' : '';
+        const dateDisplay = t.deadline ? formatDate(t.deadline) : 'No date';
+        return `
+            <div class="person-task-card ${t.status === 'complete' ? 'complete' : ''} ${isOverdue && ACTIVE_STATUSES.includes(t.status) ? 'overdue-card' : ''}"
+                 onclick="closePersonTasks(); openDetail('${t.areaId}')">
+                <div class="person-card-top">
+                    <span class="traffic-light ${t.priority}"></span>
+                    <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
+                </div>
+                <div class="person-card-task">${t.task}</div>
+                <div class="person-card-meta">
+                    <span>${t.areaIcon} ${t.area}</span>
+                    ${showOwner && t.owner ? `<span style="margin-left:8px;opacity:0.6;">👤 ${t.owner}</span>` : ''}
+                </div>
+                <div class="person-card-date ${isOverdue && ACTIVE_STATUSES.includes(t.status) ? 'overdue' : ''}">
+                    📅 ${dateDisplay} ${dblLabel ? '<small>' + dblLabel + '</small>' : ''}
+                </div>
+            </div>`;
+    }
+
+    // Active tasks grid
     const grid = document.getElementById('person-tasks-grid');
-    grid.innerHTML = `
-            ${tasks.map(t => {
-                const isOverdue = t.status !== 'complete' && t.deadline && new Date(t.deadline) < now;
-                const dbl = dateToDaysBeforeLaunch(t.deadline);
-                const dblLabel = dbl > 0 ? dbl + 'd before launch' : '';
-                const dateDisplay = t.deadline ? formatDate(t.deadline) : 'No date';
-                return `
-                    <div class="person-task-card ${t.status === 'complete' ? 'complete' : ''} ${isOverdue ? 'overdue-card' : ''}"
-                         onclick="closePersonTasks(); openDetail('${t.areaId}')">
-                        <div class="person-card-top">
-                            <span class="traffic-light ${t.priority}"></span>
-                            <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
-                        </div>
-                        <div class="person-card-task">${t.task}</div>
-                        <div class="person-card-meta">
-                            <span>${t.areaIcon} ${t.area}</span>
-                            ${showOwner && t.owner ? `<span style="margin-left:8px;opacity:0.6;">👤 ${t.owner}</span>` : ''}
-                        </div>
-                        <div class="person-card-date ${isOverdue ? 'overdue' : ''}">
-                            📅 ${dateDisplay} ${dblLabel ? '<small>' + dblLabel + '</small>' : ''}
-                        </div>
-                    </div>`;
-            }).join('')}
-            ${tasks.length === 0 ? '<div class="person-no-results">No tasks match your search.</div>' : ''}
-    `;
+    grid.innerHTML = activeTasks.map(taskCard).join('') +
+        (activeTasks.length === 0 ? '<div class="person-no-results">No active tasks' + (query ? ' match your search.' : '.') + '</div>' : '');
+
+    // Inactive section — collapsed toggle
+    const inactiveSection = document.getElementById('person-inactive-section');
+    if (inactiveTotal > 0) {
+        const isExpanded = window._personShowInactive === true;
+        inactiveSection.innerHTML = `
+            <div class="person-inactive-toggle" onclick="window._personShowInactive=!window._personShowInactive; renderPersonPage('${person}', window._personAllTasks, ${showOwner ? 'true' : 'false'})">
+                ${isExpanded ? '▾' : '▸'} ${footerParts.join(' · ')}
+            </div>
+            ${isExpanded ? `<div class="person-tasks-grid person-inactive-grid">${inactiveTasks.map(taskCard).join('')}</div>` : ''}
+        `;
+    } else {
+        inactiveSection.innerHTML = '';
+    }
 
     // Store all tasks for search re-renders
     window._personAllTasks = allTasks;
@@ -572,6 +617,7 @@ function showStatusTasks(statusFilter) {
 
     const labels = { all: 'All Tasks', overdue: 'Overdue Tasks', 'in-progress': 'In Progress', complete: 'Complete', 'on-hold': 'On Hold', cancelled: 'Cancelled' };
     personTasksSearchQuery = '';
+    window._personShowInactive = false;
     renderPersonPage(labels[statusFilter] || statusFilter, tasks, true);
 }
 window.showStatusTasks = showStatusTasks;
