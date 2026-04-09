@@ -455,7 +455,13 @@ function renderPersonPage(person, allTasks, showOwner) {
     const now = new Date();
     const completeCount = allTasks.filter(t => t.status === 'complete').length;
     const inProgCount = allTasks.filter(t => t.status === 'in-progress').length;
-    const overdueCount = allTasks.filter(t => t.status !== 'complete' && new Date(t.deadline) < now).length;
+    const notStartedCount = allTasks.filter(t => t.status === 'not-started').length;
+    const onHoldCount = allTasks.filter(t => t.status === 'on-hold').length;
+    const cancelledCount = allTasks.filter(t => t.status === 'cancelled').length;
+    const overdueCount = allTasks.filter(t =>
+        t.status !== 'complete' && t.status !== 'on-hold' && t.status !== 'cancelled' &&
+        t.deadline && new Date(t.deadline) < now
+    ).length;
 
     const page = document.getElementById('person-page');
 
@@ -465,24 +471,27 @@ function renderPersonPage(person, allTasks, showOwner) {
             <div class="person-page-header">
                 <button class="detail-back-btn" onclick="closePersonTasks()">← Dashboard</button>
                 <div class="person-page-title-row">
-                    <h1 id="person-page-title">${person}'s Tasks <span class="person-page-count">${allTasks.length}</span></h1>
+                    <h1 id="person-page-title">${showOwner ? person : person + "'s Tasks"} <span class="person-page-count">${allTasks.length}</span></h1>
                 </div>
                 <div class="person-page-stats" id="person-page-stats"></div>
                 <div class="person-search-bar">
                     <input type="text" id="person-search-input" class="form-input" placeholder="Search tasks or areas..."
                         value="${personTasksSearchQuery}"
-                        oninput="personTasksSearchQuery=this.value; renderPersonPage('${person}', window._personAllTasks)">
+                        oninput="personTasksSearchQuery=this.value; renderPersonPage('${person}', window._personAllTasks, ${showOwner ? 'true' : 'false'})">
                 </div>
             </div>
             <div class="person-tasks-grid" id="person-tasks-grid"></div>
         `;
     }
 
-    // Update stats
+    // Update stats — all statuses shown so counts always add up to total
     document.getElementById('person-page-stats').innerHTML = `
         <span class="person-stat-pill">${completeCount} ✅ complete</span>
         <span class="person-stat-pill">${inProgCount} 🟡 in progress</span>
-        <span class="person-stat-pill ${overdueCount > 0 ? 'overdue' : ''}">${overdueCount} 🔴 overdue</span>
+        <span class="person-stat-pill">${notStartedCount} ⬜ not started</span>
+        ${overdueCount > 0 ? `<span class="person-stat-pill overdue">${overdueCount} 🔴 overdue</span>` : ''}
+        ${onHoldCount > 0 ? `<span class="person-stat-pill">${onHoldCount} ⏸️ on hold</span>` : ''}
+        ${cancelledCount > 0 ? `<span class="person-stat-pill">${cancelledCount} ❌ cancelled</span>` : ''}
     `;
 
     // Update grid only
