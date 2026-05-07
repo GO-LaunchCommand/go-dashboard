@@ -1281,6 +1281,14 @@ html {
 
 .action-row:hover { background: var(--bg-card-hover); }
 
+.action-row.action-highlight {
+    animation: highlightPulse 2s ease-out;
+}
+@keyframes highlightPulse {
+    0%   { background: rgba(108, 92, 231, 0.18); box-shadow: inset 0 0 0 2px rgba(108, 92, 231, 0.5); }
+    100% { background: transparent; box-shadow: none; }
+}
+
 .action-row:last-child { border-bottom: none; }
 
 .action-row .traffic-light { width: 10px; height: 10px; }
@@ -2018,6 +2026,22 @@ html {
 }
 .person-card-date small {
     color: var(--text-dim);
+}
+.person-card-status {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+}
+.person-card-status select {
+    font-size: 12px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    width: 100%;
 }
 
 .person-no-results {

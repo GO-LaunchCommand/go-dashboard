@@ -283,6 +283,9 @@ async function loadAllData() {
         });
     });
 
+    // Auto-compute traffic light for every area from task state
+    areas.forEach(area => { area.trafficLight = computeTrafficLight(area); });
+
     renderCards();
     renderSummary();
     renderNotifications();
@@ -557,7 +560,7 @@ function renderPersonPage(person, allTasks, showOwner) {
         const dateDisplay = t.deadline ? formatDate(t.deadline) : 'No date';
         return `
             <div class="person-task-card ${t.status === 'complete' ? 'complete' : ''} ${isOverdue && ACTIVE_STATUSES.includes(t.status) ? 'overdue-card' : ''}"
-                 onclick="closePersonTasks(); openDetail('${t.areaId}')">
+                 onclick="closePersonTasks(); openDetail('${t.areaId}', '${t.id}')">
                 <div class="person-card-top">
                     <span class="traffic-light ${t.priority}"></span>
                     <span class="status-badge ${t.status}">${formatStatus(t.status)}</span>
@@ -569,6 +572,16 @@ function renderPersonPage(person, allTasks, showOwner) {
                 </div>
                 <div class="person-card-date ${isOverdue && ACTIVE_STATUSES.includes(t.status) ? 'overdue' : ''}">
                     📅 ${dateDisplay} ${dblLabel ? '<small>' + dblLabel + '</small>' : ''}
+                </div>
+                <div class="person-card-status" onclick="event.stopPropagation()">
+                    <select onchange="quickStatusChange('${t.areaId}', '${t.id}', this.value)" style="font-size:12px; padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--bg-input); color:var(--text); font-family:inherit; cursor:pointer; width:100%;">
+                        <option value="not-started" ${t.status === 'not-started' ? 'selected' : ''}>⬜ Not Started</option>
+                        <option value="in-progress" ${t.status === 'in-progress' ? 'selected' : ''}>🟡 In Progress</option>
+                        <option value="blocked" ${t.status === 'blocked' ? 'selected' : ''}>🚫 Blocked</option>
+                        <option value="on-hold" ${t.status === 'on-hold' ? 'selected' : ''}>⏸ On Hold</option>
+                        <option value="complete" ${t.status === 'complete' ? 'selected' : ''}>✅ Complete</option>
+                        <option value="cancelled" ${t.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                    </select>
                 </div>
             </div>`;
     }
@@ -648,6 +661,7 @@ function showStatusTasks(statusFilter) {
         'on-hold': 'On Hold', cancelled: 'Cancelled'
     };
     personTasksSearchQuery = '';
+    window._currentStatusFilter = statusFilter;
     window._personShowInactive = statusFilter === 'complete' || statusFilter === 'on-hold' || statusFilter === 'cancelled';
     window._personPillFilter = null;
     renderPersonPage(labels[statusFilter] || statusFilter, tasks, true);
@@ -879,9 +893,9 @@ function toggleSidebar() {
 }
 
 // ---- DETAIL PANEL ----
-function openDetail(areaId) {
+function openDetail(areaId, actionId) {
     currentAreaId = areaId;
-    expandedActionId = null;
+    expandedActionId = actionId || null;
     showRelatedTasks = false;
     relatedTasks = [];
     const area = areas.find(a => a.id === areaId);
@@ -906,6 +920,18 @@ function openDetail(areaId) {
     document.getElementById('detail-overlay').style.display = 'flex';
     const mainEl = document.querySelector('.detail-main');
     if (mainEl) mainEl.scrollTop = 0;
+
+    // If a specific action was requested, scroll to and highlight it
+    if (actionId) {
+        setTimeout(() => {
+            const el = document.querySelector(`.action-row[data-action-id="${actionId}"]`);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                el.classList.add('action-highlight');
+                setTimeout(() => el.classList.remove('action-highlight'), 2000);
+            }
+        }, 120);
+    }
 }
 
 function closeDetail() {
@@ -920,6 +946,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ---- TRAFFIC LIGHT ----
+function computeTrafficLight(area) {
+    const now = new Date();
+    const active = area.actions.filter(a => !a.archived && !['complete', 'cancelled', 'on-hold'].includes(a.status));
+    if (active.length === 0) return 'green';
+    if (active.some(a => (a.deadline && new Date(a.deadline) < now) || a.status === 'blocked')) return 'red';
+    if (active.some(a => a.status === 'in-progress')) return 'amber';
+    return 'green';
+}
+
 function changeTrafficLight(value) {
     const area = areas.find(a => a.id === currentAreaId);
     if (!area) return;
@@ -970,7 +1005,7 @@ function renderActions(area) {
         const dblLabel = dbl > 0 ? `(${dbl}d before launch)` : '';
 
         html += `
-            <div class="action-row" draggable="true" data-action-idx="${idx}" onclick="toggleActionExpand('${action.id}')">
+            <div class="action-row" draggable="true" data-action-idx="${idx}" data-action-id="${action.id}" onclick="toggleActionExpand('${action.id}')">
                 <span class="drag-handle" onmousedown="event.stopPropagation()">⠿</span>
                 <span class="traffic-light ${action.priority}"></span>
                 <span class="action-task ${action.status === 'complete' ? 'complete' : ''}">${action.task}</span>
@@ -1212,9 +1247,29 @@ function changeActionStatus(actionId, status) {
     const action = area.actions.find(a => a.id === actionId);
     if (!action) return;
     action.status = status;
+    area.trafficLight = computeTrafficLight(area);
+    const tlSelect = document.getElementById('detail-traffic-select');
+    const tlDot = document.querySelector('#detail-traffic .traffic-light-lg');
+    if (tlSelect) tlSelect.value = area.trafficLight;
+    if (tlDot) tlDot.className = `traffic-light-lg ${area.trafficLight}`;
     addActivityLog(area, `Changed "${action.task}" status to ${formatStatus(status)}`);
     saveArea(area); renderActions(area); renderCards(); renderSummary();
 }
+
+// Quick status update from task list view (no detail overlay needed)
+function quickStatusChange(areaId, actionId, newStatus) {
+    const area = areas.find(a => a.id === areaId);
+    if (!area) return;
+    const action = area.actions.find(a => a.id === actionId);
+    if (!action) return;
+    action.status = newStatus;
+    area.trafficLight = computeTrafficLight(area);
+    addActivityLog(area, `Changed "${action.task}" status to ${formatStatus(newStatus)}`);
+    saveArea(area);
+    renderCards(); renderSummary();
+    if (window._currentStatusFilter) showStatusTasks(window._currentStatusFilter);
+}
+window.quickStatusChange = quickStatusChange;
 
 function changeActionPriority(actionId, priority) {
     const area = areas.find(a => a.id === currentAreaId);
